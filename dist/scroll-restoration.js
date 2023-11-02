@@ -1,7 +1,7 @@
 const STORAGE_KEY = 'scroll-position-y';
 const windowY = sessionStorage.getItem(STORAGE_KEY) || 0;
 
-window.addEventListener('load', () => {
+window.addEventListener("DOMContentLoaded", () => {
   window.scrollTo(0, windowY);
 });
 
