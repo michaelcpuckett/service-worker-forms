@@ -1,61 +1,7 @@
 import { renderToString } from "react-dom/server";
+import { TodosPage } from "./TodosPage";
+import { Todo } from "./ITodo";
 import { openDB, DBSchema, IDBPDatabase, wrap } from 'idb';
-
-interface Todo {
-  id: number;
-  title: string;
-}
-
-function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[] }>) {
-  return (
-    <html>
-      <head>
-        <title>Todos</title>
-        <script src="/scroll-restoration.js"></script>
-      </head>
-      <body>
-        <h1>Todos</h1>
-        <form action="" method="POST">
-          <input type="hidden" name="action" value="/api/todos" />
-          <input type="hidden" name="method" value="POST" />
-          <label>
-            Title
-            <input type="text" name="title" placeholder="Title" />
-          </label>
-          <button type="submit">Add</button>
-        </form>
-        <TodosTableView todos={props.todos || []} />
-      </body>
-    </html>
-  );
-}
-
-function TodosTableView(props: React.PropsWithoutRef<{ todos: Todo[] }>) {
-  return (
-    <section>
-      <h2>Table View</h2>
-      <table>
-        <tbody>
-          {props.todos.map((todo) => (
-            <tr>
-              <td>
-                {todo.title}
-              </td>
-              <td>
-                <form action="" method="POST">
-                  <input type="hidden" name="action" value="/api/todos" />
-                  <input type="hidden" name="method" value="DELETE" />
-                  <input type="hidden" name="id" value={todo.id} />
-                  <button type="submit">Delete</button>
-                </form>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </section>
-  );
-}
 
 self.addEventListener("fetch", function (event: Event) {
   if (!(event instanceof FetchEvent)) {
