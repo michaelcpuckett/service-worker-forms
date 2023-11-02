@@ -33,7 +33,7 @@ export function TodosTableView(
                   <input type="hidden" name="action" value="/api/todos" />
                   <input type="hidden" name="method" value="DELETE" />
                   <input type="hidden" name="id" value={todo.id} />
-                  <button type="submit" autoFocus={(props.referrer.state === 'DELETE_TODO' && index === Math.max(0, (props.referrer.index ?? length) - 1)) ? true : undefined}>
+                  <button type="submit" autoFocus={(props.referrer.state === 'DELETE_TODO' && index === Math.min(length - 1, Math.max(0, (props.referrer.index ?? length)))) ? true : undefined}>
                     Delete
                   </button>
                 </form>
