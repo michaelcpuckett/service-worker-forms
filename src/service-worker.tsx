@@ -69,7 +69,7 @@ self.addEventListener("fetch", function (event: Event) {
     return;
   }
 
-  if (event.request.url.endsWith('/welcome')) {
+  if (event.request.url.endsWith('/app')) {
     if (event.request.method === 'GET') {
       return event.respondWith((async () => {
         const db = await getDb();
