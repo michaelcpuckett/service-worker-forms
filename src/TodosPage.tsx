@@ -1,7 +1,7 @@
-import { ReferrerState, Todo } from './types';
+import { Referrer, Todo } from './types';
 import {TodosTableView} from './TodosTableView';
 
-export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; referrerState: ReferrerState; }>) {
+export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; referrer: Referrer; }>) {
   return (
     <html>
       <head>
@@ -15,11 +15,11 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
           <input type="hidden" name="method" value="POST" />
           <label>
             Title
-            <input autoFocus={props.referrerState === 'ADD_TODO' ? true : undefined} type="text" name="title" placeholder="Title" />
+            <input autoFocus={props.referrer.state === 'ADD_TODO' ? true : undefined} type="text" name="title" placeholder="Title" />
           </label>
           <button type="submit">Add</button>
         </form>
-        <TodosTableView todos={props.todos || []} referrerState={props.referrerState} />
+        <TodosTableView todos={props.todos || []} referrer={props.referrer} />
       </body>
     </html>
   );

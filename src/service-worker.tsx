@@ -1,6 +1,6 @@
 import { renderToString } from "react-dom/server";
 import { TodosPage } from "./TodosPage";
-import { Todo, ReferrerState } from "./types";
+import { Todo, Referrer } from "./types";
 import { openDB, DBSchema, IDBPDatabase, wrap } from 'idb';
 
 const URLS_TO_CACHE = [
@@ -43,7 +43,9 @@ self.addEventListener("fetch", function (event: Event) {
       switch (pathname) {
         case '/app': {
           const db = await getDb();
-          const renderResult = await renderTodosPage(db, 'GET_TODOS');
+          const renderResult = await renderTodosPage(db, {
+            state: 'GET_TODOS'
+          });
           
           return new Response(`<!DOCTYPE html>${renderResult}`, {
             headers: { "Content-Type": "text/html" },
@@ -75,7 +77,9 @@ self.addEventListener("fetch", function (event: Event) {
             await saveTodoToIndexedDB(todo, db);
 
             if (new URL(event.request.referrer).pathname === '/app') {
-              const renderResult = await renderTodosPage(db, 'ADD_TODO');
+              const renderResult = await renderTodosPage(db, {
+                state: 'ADD_TODO'
+              });
 
               return new Response(`<!DOCTYPE html>${renderResult}`, {
                 headers: { "Content-Type": "text/html" },
@@ -83,13 +87,40 @@ self.addEventListener("fetch", function (event: Event) {
             }
           }
 
+          case 'PUT': {
+            const db = await getDb();
+            const id = Number(formData.id);
+            const todos = await getTodosFromIndexedDb(db);
+            const index = todos.findIndex(todo => todo.id === id);
+            const todo: Todo = {
+              id,
+              title: formData.title || 'No title',
+            };
+
+            await editTodoInIndexedDb(todo, id, db);
+
+            const renderResult = await renderTodosPage(db, {
+              state: 'EDIT_TODO',
+              index,
+            });
+
+            return new Response(`<!DOCTYPE html>${renderResult}`, {
+              headers: { "Content-Type": "text/html" },
+            });
+          }
+
           case 'DELETE': {
             const db = await getDb();
             const id = Number(formData.id);
+            const todos = await getTodosFromIndexedDb(db);
+            const index = todos.findIndex(todo => todo.id === id);
 
             await deleteTodoInIndexedDb(id, db);
 
-            const renderResult = await renderTodosPage(db, 'DELETE_TODO');
+            const renderResult = await renderTodosPage(db, {
+              state: 'DELETE_TODO',
+              index,
+            });
 
             return new Response(`<!DOCTYPE html>${renderResult}`, {
               headers: { "Content-Type": "text/html" },
@@ -111,9 +142,9 @@ self.addEventListener("fetch", function (event: Event) {
   })());
 });
 
-async function renderTodosPage(db: IDBPDatabase<unknown>, referrerState: ReferrerState) {
+async function renderTodosPage(db: IDBPDatabase<unknown>, referrer: Referrer) {
   const todos = await getTodosFromIndexedDb(db);
-  return renderToString(TodosPage({todos, referrerState}));
+  return renderToString(TodosPage({todos, referrer}));
 }
 
 async function getTodosFromIndexedDb(db: IDBPDatabase<unknown>) {
@@ -128,6 +159,13 @@ async function saveTodoToIndexedDB(todo: Todo, db: IDBPDatabase<unknown>) {
   const tx = db.transaction('todos', 'readwrite');
   const store = tx.objectStore('todos');
   await store.add(todo, todo.id);
+  await tx.done;
+}
+
+async function editTodoInIndexedDb(todo: Todo, id: number, db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('todos', 'readwrite');
+  const store = tx.objectStore('todos');
+  await store.put(todo, id);
   await tx.done;
 }
 
