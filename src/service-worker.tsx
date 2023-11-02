@@ -2,16 +2,9 @@ import { renderToString } from "react-dom/server";
 import { openDB, DBSchema, IDBPDatabase, wrap } from 'idb';
 
 interface Todo {
-  id: string;
+  id: number;
   title: string;
 }
-
-interface TodosDb extends DBSchema {
-  'todos': {
-    key: string;
-    value: Todo;
-  }
-};
 
 function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[] }>) {
   return (
@@ -90,7 +83,7 @@ self.addEventListener("fetch", function (event: Event) {
         switch (formData.method) {
           case 'POST': {
             const db = await getDb();
-            const id = Date.now().toString();
+            const id = Date.now();
             const todo: Todo = {
               id,
               title: formData.title || 'No title',
@@ -108,7 +101,7 @@ self.addEventListener("fetch", function (event: Event) {
 
           case 'DELETE': {
             const db = await getDb();
-            const id = formData.id;
+            const id = Number(formData.id);
 
             await deleteTodoInIndexedDb(id, db);
 
@@ -129,7 +122,7 @@ self.addEventListener("fetch", function (event: Event) {
   }
 });
 
-async function getTodosFromIndexedDb(db: IDBPDatabase<TodosDb>) {
+async function getTodosFromIndexedDb(db: IDBPDatabase<unknown>) {
   console.log(db);
   const tx = db.transaction('todos', 'readwrite');
   const store = tx.objectStore('todos');
@@ -137,34 +130,30 @@ async function getTodosFromIndexedDb(db: IDBPDatabase<TodosDb>) {
   return todos;
 }
 
-async function saveTodoToIndexedDB(todo: Todo, db: IDBPDatabase<TodosDb>) {
+async function saveTodoToIndexedDB(todo: Todo, db: IDBPDatabase<unknown>) {
   const tx = db.transaction('todos', 'readwrite');
   const store = tx.objectStore('todos');
   await store.add(todo, todo.id);
   await tx.done;
 }
 
-async function deleteTodoInIndexedDb(id: number, db: IDBPDatabase<TodosDb>) {
+async function deleteTodoInIndexedDb(id: number, db: IDBPDatabase<unknown>) {
   const tx = db.transaction('todos', 'readwrite');
   const store = tx.objectStore('todos');
   await store.delete(id);
   await tx.done;
 }
 
-async function getDb() {
+async function getDb(): Promise<IDBPDatabase<unknown>> {
   return await new Promise((resolve) => {
     const openRequest = self.indexedDB.open('todos', 2);
-    openRequest.addEventListener('success', (event) => {
-      resolve(wrap(event.target.result));
+    openRequest.addEventListener('success', () => {
+      resolve(wrap(openRequest.result));
     });
-    openRequest.addEventListener('upgradeneeded', (event) => {
-      const db = event.target.result;
-      db.createObjectStore('todos');
+    openRequest.addEventListener('upgradeneeded', () => {
+      openRequest.result.createObjectStore('todos');
     });
     openRequest.addEventListener('error', (event) => {
-      console.error(event);
-    });
-    openRequest.addEventListener('blocked', (event) => {
       console.error(event);
     });
   });
