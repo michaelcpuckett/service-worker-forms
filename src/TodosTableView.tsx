@@ -6,26 +6,29 @@ export function TodosTableView(
   return (
     <section>
       <h2>Table View</h2>
-      <table>
+      <table className="table-view">
         <tbody>
           {props.todos.map((todo, index, { length }) => (
             <tr>
-              <td>{todo.title}</td>
+              <td>
+                <span className="title">
+                  {todo.title}
+                </span>
+                <form action="" method="POST" hidden>
+                  <input type="hidden" name="action" value="/api/todos" />
+                  <input type="hidden" name="method" value="PUT" />
+                  <input type="hidden" name="id" value={todo.id} />
+                  <label>
+                    <input autoFocus type="text" name="title" placeholder="Title" value={todo.title} />
+                  </label>
+                  <button type="submit">
+                    Save
+                  </button>
+                </form>
+              </td>
               <td>
                 <details>
                   <summary autoFocus={(props.referrer.state === 'EDIT_TODO' && index === (props.referrer.index ?? (length - 1))) ? true : undefined}>Edit</summary>
-                  <form action="" method="POST">
-                    <input type="hidden" name="action" value="/api/todos" />
-                    <input type="hidden" name="method" value="PUT" />
-                    <input type="hidden" name="id" value={todo.id} />
-                    <label>
-                      Title
-                      <input type="text" name="title" placeholder="Title" value={todo.title} />
-                    </label>
-                    <button type="submit">
-                      Save
-                    </button>
-                  </form>
                 </details>
               </td>
               <td>

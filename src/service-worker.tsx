@@ -56,8 +56,7 @@ self.addEventListener("fetch", function (event: Event) {
         }
         case '/settings': {
           const db = await getDb();
-          const settings = await getSettingsFromIndexedDb(db);
-          const renderResult = renderToString(<SettingsPage settings={settings} />);
+          const renderResult = await renderSettingsPage(db);
 
           return new Response(`<!DOCTYPE html>${renderResult}`, {
             headers: { "Content-Type": "text/html" },
@@ -150,7 +149,7 @@ self.addEventListener("fetch", function (event: Event) {
             await saveSettingsToIndexedDb({ theme }, db);
 
             if (new URL(event.request.referrer).pathname === '/settings') {
-              const renderResult = renderToString(<SettingsPage settings={{ theme }} />);
+              const renderResult = await renderSettingsPage(db);
 
               return new Response(`<!DOCTYPE html>${renderResult}`, {
                 headers: { "Content-Type": "text/html" },
@@ -174,7 +173,13 @@ self.addEventListener("fetch", function (event: Event) {
 
 async function renderTodosPage(db: IDBPDatabase<unknown>, referrer: Referrer) {
   const todos = await getTodosFromIndexedDb(db);
-  return renderToString(TodosPage({todos, referrer}));
+  const settings = await getSettingsFromIndexedDb(db);
+  return renderToString(TodosPage({todos, referrer, settings}));
+}
+
+async function renderSettingsPage(db: IDBPDatabase<unknown>) {
+  const settings = await getSettingsFromIndexedDb(db);
+  return renderToString(SettingsPage({settings}));
 }
 
 async function getSettingsFromIndexedDb(db: IDBPDatabase<unknown>) {

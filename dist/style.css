@@ -7,12 +7,51 @@
 }
 
 :focus-visible {
-  outline: 2px solid LinkText;
+  outline: 2px solid var(--swatch-interactive);
   outline-offset: 2px;
 }
 
 body {
   margin: 0;
   font-family: sans-serif;
+  background: Canvas;
+  color: CanvasText;
+  --swatch-interactive: LinkText;
+
+  &.theme--dark {
+    color-scheme: dark;
+    --swatch-interactive: deepskyblue;
+  }
 }
 
+.table-view {
+  width: 100%;
+  
+  & tbody {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  & tr {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+
+  & td {
+    border: 1px solid black;
+    padding: 12px;
+  }
+
+  & tr:has(details[open]) form[hidden] {
+    display: block;
+  }
+
+  & tr:has(details[open]) .title {
+    display: none;
+  }
+}
+
+table,
+tbody {
+  display: grid;
+}
