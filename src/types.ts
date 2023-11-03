@@ -1,16 +1,11 @@
 export interface Todo {
   id: number;
   title: string;
+  completed: boolean;
 }
 
-export type ReferrerState =
-  | "GET_TODOS"
-  | "ADD_TODO"
-  | "DELETE_TODO"
-  | "EDIT_TODO";
-
 export type Referrer = {
-  state: ReferrerState;
+  state: string;
   index?: number;
 };
 

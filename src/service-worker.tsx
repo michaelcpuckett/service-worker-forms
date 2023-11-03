@@ -5,7 +5,6 @@ import { Todo, Referrer, Settings } from "./types";
 import { openDB, DBSchema, IDBPDatabase, wrap } from 'idb';
 
 const URLS_TO_CACHE = [
-  '/index.html',
   '/style.css',
   '/scroll-restoration.js',
 ];
@@ -31,7 +30,14 @@ self.addEventListener("fetch", function (event: Event) {
 
   if (event.request.method === 'GET') {
     return event.respondWith((async () => {
-      const pathname = new URL(event.request.url).pathname;
+      const url = new URL(event.request.url);
+      const pathname = url.pathname;
+      const state = url.searchParams.get('state') || '';
+      const index = Number(url.searchParams.get('index') ?? 0);
+      const referrer = {
+        state,
+        index,
+      };
 
       if (URLS_TO_CACHE.includes(pathname)) {
         const cache = await caches.open('v1');
@@ -43,12 +49,9 @@ self.addEventListener("fetch", function (event: Event) {
       }
 
       switch (pathname) {
-        case '/':
-        case '/app': {
+        case '/': {
           const db = await getDb();
-          const renderResult = await renderTodosPage(db, {
-            state: 'GET_TODOS'
-          });
+          const renderResult = await renderTodosPage(db, referrer);
           
           return new Response(`<!DOCTYPE html>${renderResult}`, {
             headers: { "Content-Type": "text/html" },
@@ -73,8 +76,9 @@ self.addEventListener("fetch", function (event: Event) {
   return event.respondWith((async () => {
     const rawFormData = await event.request.formData();
     const formData = Object.fromEntries(rawFormData.entries());
+    const {pathname} = new URL(event.request.url);
 
-    switch (formData.action) {
+    switch (pathname) {
       case '/api/todos': {
         switch (formData.method) {
           case 'POST': {
@@ -83,19 +87,20 @@ self.addEventListener("fetch", function (event: Event) {
             const todo: Todo = {
               id,
               title: formData.title || 'No title',
+              completed: false,
             };
 
             await saveTodoToIndexedDB(todo, db);
 
-            if (['/app', '/'].includes(new URL(event.request.referrer).pathname)) {
-              const renderResult = await renderTodosPage(db, {
-                state: 'ADD_TODO'
-              });
+            const url = new URL(event.request.referrer);
+            url.searchParams.set('state', 'ADD_TODO');
 
-              return new Response(`<!DOCTYPE html>${renderResult}`, {
-                headers: { "Content-Type": "text/html" },
-              });
-            }
+            return new Response(null, {
+              headers: {
+                "Location": url.href,
+              },
+              status: 302,
+            });
           }
 
           case 'PUT': {
@@ -103,20 +108,24 @@ self.addEventListener("fetch", function (event: Event) {
             const id = Number(formData.id);
             const todos = await getTodosFromIndexedDb(db);
             const index = todos.findIndex(todo => todo.id === id);
+            const prev = todos[index];
             const todo: Todo = {
               id,
               title: formData.title || 'No title',
+              completed: formData.completed === 'on',
             };
 
             await editTodoInIndexedDb(todo, id, db);
 
-            const renderResult = await renderTodosPage(db, {
-              state: 'EDIT_TODO',
-              index,
-            });
+            const url = new URL(event.request.referrer);
+            url.searchParams.set('state', prev.completed !== todo.completed ? 'EDIT_TODO_COMPLETED' : 'EDIT_TODO_TITLE');
+            url.searchParams.set('index', `${index}`);
 
-            return new Response(`<!DOCTYPE html>${renderResult}`, {
-              headers: { "Content-Type": "text/html" },
+            return new Response(null, {
+              headers: {
+                "Location": url.href,
+              },
+              status: 302,
             });
           }
 
@@ -128,13 +137,15 @@ self.addEventListener("fetch", function (event: Event) {
 
             await deleteTodoInIndexedDb(id, db);
 
-            const renderResult = await renderTodosPage(db, {
-              state: 'DELETE_TODO',
-              index,
-            });
+            const url = new URL(event.request.referrer);
+            url.searchParams.set('state', 'DELETE_TODO');
+            url.searchParams.set('index', `${index}`);
 
-            return new Response(`<!DOCTYPE html>${renderResult}`, {
-              headers: { "Content-Type": "text/html" },
+            return new Response(null, {
+              headers: {
+                "Location": url.href,
+              },
+              status: 302,
             });
           }
         }
@@ -148,13 +159,15 @@ self.addEventListener("fetch", function (event: Event) {
             
             await saveSettingsToIndexedDb({ theme }, db);
 
-            if (new URL(event.request.referrer).pathname === '/settings') {
-              const renderResult = await renderSettingsPage(db);
+            const url = new URL(event.request.referrer);
+            url.searchParams.set('state', 'CHANGE_THEME');
 
-              return new Response(`<!DOCTYPE html>${renderResult}`, {
-                headers: { "Content-Type": "text/html" },
-              });
-            }
+            return new Response(null, {
+              headers: {
+                "Location": url.href,
+              },
+              status: 302,
+            });
           }
         }
       }

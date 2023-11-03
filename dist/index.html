@@ -6,7 +6,7 @@
       navigator.serviceWorker.register("/service-worker.js").then(
         function (registration) {
           navigator.serviceWorker.ready.then(() => {
-            window.location.href = "/app";
+            window.location.reload();
           });
         },
         function (err) {

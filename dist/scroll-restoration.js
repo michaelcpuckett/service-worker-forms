@@ -1,3 +1,13 @@
+window.addEventListener('pageshow', (event) => {
+  const url = new URL(window.location.href);
+
+  if (event.persisted) {
+    window.location.reload();
+  } else if (url.searchParams.has('state')) {
+    window.history.replaceState({}, '', url.pathname);
+  }
+});
+
 const STORAGE_KEY = 'scroll-position-y';
 const windowY = sessionStorage.getItem(STORAGE_KEY) || 0;
 
@@ -10,3 +20,12 @@ const handleScroll = () => {
 };
 
 window.addEventListener('scroll', handleScroll);
+
+window.addEventListener('DOMContentLoaded', () => {
+  Array.from(window.document.querySelectorAll('form[data-auto-submit] :is([type="checkbox"], [type="radio"])')).forEach((inputElement) => {
+    console.log(inputElement);
+    inputElement.addEventListener('input', () => {
+      inputElement.form.submit();
+    });
+  });
+});
