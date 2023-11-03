@@ -13,3 +13,7 @@ export type Referrer = {
   state: ReferrerState;
   index?: number;
 };
+
+export interface Settings {
+  theme: string;
+}

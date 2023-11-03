@@ -1,10 +1,12 @@
 import { renderToString } from "react-dom/server";
 import { TodosPage } from "./TodosPage";
-import { Todo, Referrer } from "./types";
+import { SettingsPage } from "./SettingsPage";
+import { Todo, Referrer, Settings } from "./types";
 import { openDB, DBSchema, IDBPDatabase, wrap } from 'idb';
 
 const URLS_TO_CACHE = [
   '/index.html',
+  '/style.css',
   '/scroll-restoration.js',
 ];
 
@@ -41,12 +43,22 @@ self.addEventListener("fetch", function (event: Event) {
       }
 
       switch (pathname) {
+        case '/':
         case '/app': {
           const db = await getDb();
           const renderResult = await renderTodosPage(db, {
             state: 'GET_TODOS'
           });
           
+          return new Response(`<!DOCTYPE html>${renderResult}`, {
+            headers: { "Content-Type": "text/html" },
+          });
+        }
+        case '/settings': {
+          const db = await getDb();
+          const settings = await getSettingsFromIndexedDb(db);
+          const renderResult = renderToString(<SettingsPage settings={settings} />);
+
           return new Response(`<!DOCTYPE html>${renderResult}`, {
             headers: { "Content-Type": "text/html" },
           });
@@ -76,7 +88,7 @@ self.addEventListener("fetch", function (event: Event) {
 
             await saveTodoToIndexedDB(todo, db);
 
-            if (new URL(event.request.referrer).pathname === '/app') {
+            if (['/app', '/'].includes(new URL(event.request.referrer).pathname)) {
               const renderResult = await renderTodosPage(db, {
                 state: 'ADD_TODO'
               });
@@ -129,6 +141,24 @@ self.addEventListener("fetch", function (event: Event) {
         }
       }
       break;
+      case '/api/settings': {
+        switch (formData.method) {
+          case 'PUT': {
+            const db = await getDb();
+            const theme = formData.theme;
+            
+            await saveSettingsToIndexedDb({ theme }, db);
+
+            if (new URL(event.request.referrer).pathname === '/settings') {
+              const renderResult = renderToString(<SettingsPage settings={{ theme }} />);
+
+              return new Response(`<!DOCTYPE html>${renderResult}`, {
+                headers: { "Content-Type": "text/html" },
+              });
+            }
+          }
+        }
+      }
       default: {
         return new Response('Not found', {
           status: 404,
@@ -147,8 +177,21 @@ async function renderTodosPage(db: IDBPDatabase<unknown>, referrer: Referrer) {
   return renderToString(TodosPage({todos, referrer}));
 }
 
+async function getSettingsFromIndexedDb(db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('settings', 'readwrite');
+  const store = tx.objectStore('settings');
+  const theme = await store.get('theme');
+  return { theme };
+}
+
+async function saveSettingsToIndexedDb(settings: Settings, db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('settings', 'readwrite');
+  const store = tx.objectStore('settings');
+  await store.put(settings.theme, 'theme');
+  await tx.done;
+}
+
 async function getTodosFromIndexedDb(db: IDBPDatabase<unknown>) {
-  console.log(db);
   const tx = db.transaction('todos', 'readwrite');
   const store = tx.objectStore('todos');
   const todos = await store.getAll();
@@ -186,6 +229,7 @@ async function getDb(): Promise<IDBPDatabase<unknown>> {
 
     openRequest.addEventListener('upgradeneeded', () => {
       openRequest.result.createObjectStore('todos');
+      openRequest.result.createObjectStore('settings');
     });
 
     openRequest.addEventListener('error', (event) => {

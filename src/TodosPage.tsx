@@ -7,8 +7,12 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
       <head>
         <title>Todos</title>
         <script src="/scroll-restoration.js"></script>
+        <link rel="stylesheet" href="/style.css" />
       </head>
       <body>
+        <nav>
+          <a href="/settings">Settings</a>
+        </nav>
         <main>
           <h1>Todos</h1>
           <form action="" method="POST">
