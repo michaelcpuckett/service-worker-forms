@@ -7,8 +7,9 @@ export function PageShell(props: React.PropsWithChildren<{ pageTitle: string; se
         <title>{props.pageTitle}</title>
         <script src="/scroll-restoration.js"></script>
         <link rel="stylesheet" href="/style.css" />
+        <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className={`theme--${props.settings.theme || 'light'}`}>
+      <body className={`theme--${props.settings.theme || 'dark'}`}>
         {props.children}
       </body>
     </html>

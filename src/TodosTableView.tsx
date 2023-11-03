@@ -38,12 +38,20 @@ export function TodosTableView(
                 </td>
                 <td>
                   {(props.referrer.state === 'EDITING_TODO' && index === (props.referrer.index ?? (length - 1))) ? (
-                    <form action="/api/todos" method="POST">
+                    <form action="/api/todos" method="POST" className="inline-form">
                       <input type="hidden" name="method" value="PUT" />
                       <input type="hidden" name="id" value={todo.id} />
                       <input type="hidden" name="completed" value={todo.completed ? 'on' : 'off'} />
                       <label>
-                        <input autoFocus type="text" name="title" placeholder="Title" value={todo.title} />
+                        <input
+                          autoComplete="off"
+                          autoFocus
+                          type="text"
+                          name="title"
+                          placeholder="Title"
+                          value={todo.title}
+                          aria-label="Title"
+                        />
                       </label>
                       <button type="submit">
                         Save

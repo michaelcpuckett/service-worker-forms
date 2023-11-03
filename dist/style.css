@@ -51,8 +51,35 @@ nav {
   margin-top: 1rem;
 }
 
+button,
+[role="button"] {
+  padding: .5rem 1rem;
+  margin: 0;
+  border: 1px solid;
+  border-radius: 0;
+  font: inherit;
+  box-shadow: none;
+  background: ButtonFace;
+  color: CanvasText;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+input:not([type="checkbox"]):not([type="radio"]) {
+  padding: 1rem;
+  margin: 0;
+  border: 1px solid;
+  box-shadow: none;
+  border-radius: 0;
+  font: inherit;
+  background: Canvas;
+  color: CanvasText;
+  width: 100%;
+}
+
 .table-view {
   border: 1px solid;
+  border-bottom: 0;
   width: 100%;
   
   & tbody {
@@ -63,6 +90,8 @@ nav {
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
+    border-bottom: 1px solid;
+    padding: 0 .5rem;
 
     &[data-completed] {
       background: var(--swatch-gray-background);
@@ -71,8 +100,7 @@ nav {
   }
 
   & td {
-    border: 1px solid;
-    padding: 1rem;
+    padding: 1rem .5rem;
     display: flex;
     place-items: center;
 
@@ -108,12 +136,15 @@ tbody {
   width: 2rem;
   border: 1px solid;
   border-radius: 0;
+  box-shadow: none;
 }
 
-[type="text"] {
-  width: 100%;
-  padding: 1rem;
-  border: 1px solid;
-  border-radius: 0;
-  margin: 0;
+.inline-form {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+
+  & label {
+    flex: 1;
+  }
 }

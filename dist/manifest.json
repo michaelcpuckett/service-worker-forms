@@ -1,0 +1,8 @@
+{
+  "short_name": "To Do",
+  "name": "Todos App",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "start_url": "/"
+}

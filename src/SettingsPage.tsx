@@ -17,8 +17,8 @@ export function SettingsPage(props: React.PropsWithChildren<{ settings: Settings
             <label>
               Theme
               <select name="theme">
-                <option value="light" selected={props.settings.theme === 'light' ? true : undefined}>Light</option>
                 <option value="dark" selected={props.settings.theme === 'dark' ? true : undefined}>Dark</option>
+                <option value="light" selected={props.settings.theme === 'light' ? true : undefined}>Light</option>
               </select>
             </label>
             <button type="submit">Save</button>
