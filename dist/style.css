@@ -32,12 +32,16 @@ body {
   --swatch-interactive: LinkText;
   --swatch-gray-background: #ccc;
   --swatch-gray-text: #333;
+  --swatch-button-background: #666;
+  --swatch-button-text: #fff;
 
   &.theme--dark {
     color-scheme: dark;
     --swatch-interactive: deepskyblue;
     --swatch-gray-background: #333;
     --swatch-gray-text: #ccc;
+    --swatch-button-background: #666;
+    --swatch-button-text: #fff;
   }
 }
 
@@ -59,8 +63,8 @@ button,
   border-radius: 0;
   font: inherit;
   box-shadow: none;
-  background: ButtonFace;
-  color: CanvasText;
+  background: var(--swatch-button-background);
+  color: var(--swatch-button-text);
   text-decoration: none;
   cursor: pointer;
 }
