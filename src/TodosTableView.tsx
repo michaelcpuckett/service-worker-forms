@@ -83,6 +83,35 @@ export function TodosTableView(
                     </button>
                   </form>
                 </td>
+                
+                <td>
+                  <form action="/api/todos" method="POST">
+                    <input type="hidden" name="method" value="PUT" />
+                    <input type="hidden" name="id" value={todo.id} />
+                    <input type="hidden" name="title" value={todo.title} />
+                    <input type="hidden" name="completed" value={todo.completed ? 'on' : 'off'} />
+                    <input type="hidden" name="index" value={index - 1} />
+                    <button aria-label="Move up" disabled={index === 0 ? true : undefined} type="submit" autoFocus={(props.referrer.state === 'REORDER_TODO_UP' && index === props.referrer.index) || (props.referrer.state === 'REORDER_TODO_DOWN' && index === props.referrer.index && index === (props.todos.length - 1))}>
+                      <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M7 14l5-5 5 5z" />
+                      </svg>
+                    </button>
+                  </form>
+                </td>
+                <td>
+                  <form action="/api/todos" method="POST">
+                    <input type="hidden" name="method" value="PUT" />
+                    <input type="hidden" name="id" value={todo.id} />
+                    <input type="hidden" name="title" value={todo.title} />
+                    <input type="hidden" name="completed" value={todo.completed ? 'on' : 'off'} />
+                    <input type="hidden" name="index" value={index + 1} />
+                    <button aria-label="Move down" disabled={index === (props.todos.length - 1)} type="submit" autoFocus={(props.referrer.state === 'REORDER_TODO_DOWN' && index === props.referrer.index) || (props.referrer.state === 'REORDER_TODO_UP' && index === 0 && props.referrer.index === 0)}>
+                      <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M7 10l5 5 5-5z" />
+                      </svg>
+                    </button>
+                  </form>
+                </td>
               </tr>
             ))}
           </tbody>

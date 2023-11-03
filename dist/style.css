@@ -87,7 +87,7 @@ input:not([type="checkbox"]):not([type="radio"]) {
   width: 100%;
   
   & tbody {
-    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto auto;
   }
 
   & tr {
@@ -151,4 +151,12 @@ tbody {
   & label {
     flex: 1;
   }
+}
+
+button svg {
+  height: 2rem;
+}
+
+button:has(svg:only-child) {
+  padding: 0;
 }

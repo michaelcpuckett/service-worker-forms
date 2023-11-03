@@ -7,6 +7,7 @@ import { openDB, DBSchema, IDBPDatabase, wrap } from 'idb';
 const URLS_TO_CACHE = [
   '/style.css',
   '/scroll-restoration.js',
+  '/manifest.json',
 ];
 
 self.addEventListener('install', function (event: Event) {
@@ -108,6 +109,26 @@ self.addEventListener("fetch", function (event: Event) {
             const id = Number(formData.id);
             const todos = await getTodosFromIndexedDb(db);
             const index = todos.findIndex(todo => todo.id === id);
+
+            if ('index' in formData) {
+              const newIndex = Number(formData.index);
+              const prev = {...todos[newIndex], id: todos[index].id};
+              const todo = {...todos[index], id: todos[newIndex].id};
+
+              await editTodoInIndexedDb(todo, todo.id, db);
+              await editTodoInIndexedDb(prev, prev.id, db);
+
+              const url = new URL(event.request.referrer);
+              url.searchParams.set('state', `REORDER_TODO_${newIndex < index ? 'UP' : 'DOWN'}`);
+              url.searchParams.set('index', `${newIndex}`);
+
+              return new Response(null, {
+                headers: {
+                  "Location": url.href,
+                },
+                status: 302,
+              });
+            }
             const prev = todos[index];
             const todo: Todo = {
               id,
