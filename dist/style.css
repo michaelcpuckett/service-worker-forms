@@ -71,6 +71,11 @@ button,
   color: var(--swatch-button-text);
   text-decoration: none;
   cursor: pointer;
+
+  &[disabled] {
+    opacity: .667;
+    cursor: not-allowed;
+  }
 }
 
 input:not([type="checkbox"]):not([type="radio"]) {
@@ -91,11 +96,7 @@ input:not([type="checkbox"]):not([type="radio"]) {
   width: 100%;
   
   & tbody {
-    grid-template-columns: auto 1fr;
-
-    @media (min-width: 800px) {
-      grid-template-columns: auto minmax(0, 1fr) auto auto auto auto;
-    }
+    grid-template-columns: auto minmax(0, 1fr) auto;
   }
 
   & tr {
@@ -104,6 +105,7 @@ input:not([type="checkbox"]):not([type="radio"]) {
     grid-template-columns: subgrid;
     border-bottom: 1px solid;
     padding: 0 .5rem;
+    position: relative;
 
     &[data-completed] {
       background: var(--swatch-gray-background);
@@ -116,16 +118,13 @@ input:not([type="checkbox"]):not([type="radio"]) {
     place-items: center;
     padding: .5rem;
 
-    @media (min-width: 800px) {
-      padding: 1rem .5rem;
-    }
-
     & form {
       flex: 1;
       display: flex;
       flex-wrap: wrap;
       place-items: center;
       gap: 1rem;
+      width: 100%;
 
       & label {
         flex: 1;
@@ -138,16 +137,27 @@ input:not([type="checkbox"]):not([type="radio"]) {
       }
     }
   }
-}
 
+  & ul {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    border: 1px solid;
+    list-style: none;
+    background: CanvasText;
+    color: Canvas;
+    padding: 1rem;
+    margin: 0;
+    position: absolute;
+    right: -1rem;
+    min-width: 300px;
+    z-index: 1;
 
-@media screen and (min-width: 800px) and (hover: hover) {
-  .table-view td:has(button):not(:has(input[type="text"])) {
-    transition: opacity .125s;
-  }
-
-  .table-view tr:not(:hover):not(:focus-within) td:has(button):not(:has(input[type="text"])) {
-    opacity: 0;
+    & button,
+    & a {
+      display: flex;
+      width: 100%;
+    }
   }
 }
 
