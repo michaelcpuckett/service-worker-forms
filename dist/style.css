@@ -140,6 +140,17 @@ input:not([type="checkbox"]):not([type="radio"]) {
   }
 }
 
+
+@media screen and (min-width: 800px) and (hover: hover) {
+  .table-view td:has(button):not(:has(input[type="text"])) {
+    transition: opacity .125s;
+  }
+
+  .table-view tr:not(:hover):not(:focus-within) td:has(button):not(:has(input[type="text"])) {
+    opacity: 0;
+  }
+}
+
 table,
 tbody {
   display: grid;

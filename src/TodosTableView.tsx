@@ -68,24 +68,6 @@ export function TodosTableView(
                   )}
                 </td>
                 <td>
-                  <a
-                    href={`?state=EDITING_TODO&index=${index}`}
-                    role="button"
-                    autoFocus={(props.referrer.state === 'EDIT_TODO_TITLE' && index === (props.referrer.index ?? (length - 1))) ? true : undefined}>
-                    Edit
-                  </a>
-                </td>
-                <td>
-                  <form action="/api/todos" method="POST">
-                    <input type="hidden" name="method" value="DELETE" />
-                    <input type="hidden" name="id" value={todo.id} />
-                    <button type="submit" autoFocus={(props.referrer.state === 'DELETE_TODO' && index === Math.min(length - 1, Math.max(0, (props.referrer.index ?? length)))) ? true : undefined}>
-                      Delete
-                    </button>
-                  </form>
-                </td>
-                
-                <td>
                   <form action="/api/todos" method="POST">
                     <input type="hidden" name="method" value="PUT" />
                     <input type="hidden" name="id" value={todo.id} />
@@ -112,6 +94,23 @@ export function TodosTableView(
                       </svg>
                     </button>
                   </form>
+                </td>
+                <td>
+                  <form action="/api/todos" method="POST">
+                    <input type="hidden" name="method" value="DELETE" />
+                    <input type="hidden" name="id" value={todo.id} />
+                    <button type="submit" autoFocus={(props.referrer.state === 'DELETE_TODO' && index === Math.min(length - 1, Math.max(0, (props.referrer.index ?? length)))) ? true : undefined}>
+                      Delete
+                    </button>
+                  </form>
+                </td>
+                <td>
+                  <a
+                    href={`?state=EDITING_TODO&index=${index}`}
+                    role="button"
+                    autoFocus={(props.referrer.state === 'EDIT_TODO_TITLE' && index === (props.referrer.index ?? (length - 1))) ? true : undefined}>
+                    Edit
+                  </a>
                 </td>
               </tr>
             ))}
