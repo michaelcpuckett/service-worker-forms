@@ -46,6 +46,7 @@ export function TodosTableView(
                         <input
                           autoComplete="off"
                           autoFocus
+                          required
                           type="text"
                           name="title"
                           placeholder="Title"

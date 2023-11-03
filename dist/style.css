@@ -29,6 +29,10 @@ body {
   font-family: sans-serif;
   background: Canvas;
   color: CanvasText;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
   --swatch-interactive: LinkText;
   --swatch-gray-background: #ccc;
   --swatch-gray-text: #333;
@@ -87,7 +91,11 @@ input:not([type="checkbox"]):not([type="radio"]) {
   width: 100%;
   
   & tbody {
-    grid-template-columns: auto minmax(0, 1fr) auto auto auto auto;
+    grid-template-columns: auto 1fr;
+
+    @media (min-width: 800px) {
+      grid-template-columns: auto minmax(0, 1fr) auto auto auto auto;
+    }
   }
 
   & tr {
@@ -104,9 +112,13 @@ input:not([type="checkbox"]):not([type="radio"]) {
   }
 
   & td {
-    padding: 1rem .5rem;
     display: flex;
     place-items: center;
+    padding: .5rem;
+
+    @media (min-width: 800px) {
+      padding: 1rem .5rem;
+    }
 
     & form {
       flex: 1;
