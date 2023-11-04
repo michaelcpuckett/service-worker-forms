@@ -10,6 +10,8 @@ import {DeleteTodoForm} from './DeleteTodoForm';
 export function TodosTableView(
   props: React.PropsWithoutRef<{ todos: Todo[], referrer: Referrer }>
 ) {
+  const completedTodos = props.todos.filter((todo) => todo.completed);
+  const incompleteTodos = props.todos.filter((todo) => !todo.completed);
   const filteredTodos = props.todos.filter((todo) => {
     switch (props.referrer.filter) {
       case 'completed':
@@ -24,20 +26,28 @@ export function TodosTableView(
   return (
     <section>
       <h2>Table View</h2>
-      <fieldset>
-        <legend>Filter</legend>
-        <ul>
-          <li>
-            <a href="/">All</a>
-          </li>
-          <li>
-            <a href="/?filter=incompleted">Incomplete</a>
-          </li>
-          <li>
-            <a href="/?filter=completed">Completed</a>
-          </li>
-        </ul>
-      </fieldset>
+      <nav aria-label="Actions">
+        <fieldset>
+          <legend>Filter</legend>
+          <ul className="no-bullet">
+            <li>
+              <a
+                aria-current={!props.referrer.filter ? 'page' : undefined}
+                href="/">All ({props.todos.length})</a>
+            </li>
+            <li>
+              <a
+                aria-current={props.referrer.filter === 'incompleted' ? 'page' : undefined}
+                href="/?filter=incompleted">Incomplete ({incompleteTodos.length})</a>
+            </li>
+            <li>
+              <a
+                aria-current={props.referrer.filter === 'completed' ? 'page' : undefined}
+                href="/?filter=completed">Completed ({completedTodos.length})</a>
+            </li>
+          </ul>
+        </fieldset>
+      </nav>
       {props.todos.length === 0 ? (
         <p>
         No todos yet. Add one above.

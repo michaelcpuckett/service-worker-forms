@@ -6,8 +6,8 @@ window.addEventListener('pageshow', (event) => {
   } else if (url.searchParams.has('state')) {
     const pathname = url.pathname;
     const filter = url.searchParams.get('filter');
-    const url = pathname + (filter ? `?filter=${filter}` : '');
-    window.history.replaceState({}, '', url.pathname);
+    const nextUrl = pathname + (filter ? `?filter=${filter}` : '');
+    window.history.replaceState({}, '', nextUrl);
   }
 });
 
