@@ -205,3 +205,17 @@ button svg {
 button:has(svg:only-child) {
   padding: 0;
 }
+
+fieldset:has(input:not([type="checkbox"]):not([type="radio"])) {
+  border: 1px solid;
+  padding: 1rem;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+
+  & label,
+  & input:not([type="checkbox"]):not([type="radio"]) {
+    flex: 1;
+  }
+}

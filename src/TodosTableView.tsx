@@ -15,10 +15,8 @@ export function TodosTableView(
       return true;
     }
 
-    return todo.title.includes(props.referrer.query);
+    return todo.title.toLowerCase().includes(props.referrer.query.toLowerCase());
   });
-  const completedTodos = queriedTodos.filter((todo) => todo.completed);
-  const incompleteTodos = queriedTodos.filter((todo) => !todo.completed);
   const filteredTodos = queriedTodos.filter((todo) => {
     switch (props.referrer.filter) {
       case 'completed':
