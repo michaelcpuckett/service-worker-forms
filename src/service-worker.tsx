@@ -102,7 +102,7 @@ self.addEventListener("fetch", function (event: Event) {
               headers: {
                 "Location": url.href,
               },
-              status: 302,
+              status: 303,
             });
           }
 
@@ -128,7 +128,7 @@ self.addEventListener("fetch", function (event: Event) {
                 headers: {
                   "Location": url.href,
                 },
-                status: 302,
+                status: 303,
               });
             }
             const prev = todos[index];
@@ -148,7 +148,7 @@ self.addEventListener("fetch", function (event: Event) {
               headers: {
                 "Location": url.href,
               },
-              status: 302,
+              status: 303,
             });
           }
 
@@ -168,7 +168,7 @@ self.addEventListener("fetch", function (event: Event) {
               headers: {
                 "Location": url.href,
               },
-              status: 302,
+              status: 303,
             });
           }
         }
@@ -189,7 +189,7 @@ self.addEventListener("fetch", function (event: Event) {
               headers: {
                 "Location": url.href,
               },
-              status: 302,
+              status: 303,
             });
           }
         }
