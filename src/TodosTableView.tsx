@@ -10,6 +10,17 @@ import {DeleteTodoForm} from './DeleteTodoForm';
 export function TodosTableView(
   props: React.PropsWithoutRef<{ todos: Todo[], referrer: Referrer }>
 ) {
+  const filteredTodos = props.todos.filter((todo) => {
+    switch (props.referrer.filter) {
+      case 'completed':
+        return todo.completed;
+      case 'incompleted':
+        return !todo.completed;
+      default:
+        return true;
+    }
+  });
+
   return (
     <section>
       <h2>Table View</h2>
@@ -34,16 +45,7 @@ export function TodosTableView(
       ) : (
         <table className="table-view">
           <tbody>
-            {props.todos.filter((todo) => {
-              switch (props.referrer.filter) {
-                case 'completed':
-                  return todo.completed;
-                case 'incompleted':
-                  return !todo.completed;
-                default:
-                  return true;
-              }
-            }).map((todo, index, { length }) => (
+            {filteredTodos.map((todo, index, { length }) => (
               <tr
                 aria-label={todo.title}
                 data-completed={todo.completed ? '' : undefined}>
@@ -66,8 +68,8 @@ export function TodosTableView(
                       <li>
                         <ReorderTodoUpForm
                           todo={todo}
-                          index={index}
-                          isDisabled={index === 0}
+                          index={props.todos.findIndex(t => t.id === filteredTodos[index - 1]?.id)}
+                          isDisabled={!filteredTodos[index - 1]}
                           autofocus={
                             (props.referrer.state === "REORDER_TODO_UP" &&
                               index === props.referrer.index) ||
@@ -80,8 +82,8 @@ export function TodosTableView(
                       <li>
                         <ReorderTodoDownForm
                           todo={todo}
-                          index={index}
-                          isDisabled={index === (props.todos.length - 1)}
+                          index={props.todos.findIndex(t => t.id === filteredTodos[index + 1]?.id)}
+                          isDisabled={!filteredTodos[index + 1]}
                           autofocus={(props.referrer.state === 'REORDER_TODO_DOWN' && index === props.referrer.index) || (props.referrer.state === 'REORDER_TODO_UP' && index === 0 && props.referrer.index === 0)}
                         />
                       </li>

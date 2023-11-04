@@ -8,7 +8,7 @@ export function ReorderTodoDownForm(props: React.PropsWithoutRef<{ todo: Todo; i
       <input type="hidden" name="id" value={props.todo.id} />
       <input type="hidden" name="title" value={props.todo.title} />
       <input type="hidden" name="completed" value={props.todo.completed ? 'on' : 'off'} />
-      <input type="hidden" name="index" value={props.index + 1} />
+      <input type="hidden" name="index" value={props.index} />
       <button type="submit" autoFocus={props.autofocus} disabled={props.isDisabled}>
         Move Down
       </button>

@@ -12,7 +12,7 @@ export function ReorderTodoUpForm(props: React.PropsWithChildren<{ todo: Todo; i
         name="completed"
         value={props.todo.completed ? "on" : "off"}
       />
-      <input type="hidden" name="index" value={props.index - 1} />
+      <input type="hidden" name="index" value={props.index} />
       <button
         disabled={props.isDisabled}
         type="submit"
