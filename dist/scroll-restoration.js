@@ -3,10 +3,17 @@ window.addEventListener('pageshow', (event) => {
 
   if (event.persisted) {
     window.location.reload();
-  } else if (url.searchParams.has('state')) {
+  } else {
     const pathname = url.pathname;
     const filter = url.searchParams.get('filter');
-    const nextUrl = pathname + (filter ? `?filter=${filter}` : '');
+    const query = url.searchParams.get('query');
+    const nextUrl = new URL(window.location.origin + pathname);
+    if (filter) {
+      nextUrl.searchParams.set('filter', filter);
+    }
+    if (query) {
+      nextUrl.searchParams.set('query', query);
+    }
     window.history.replaceState({}, '', nextUrl);
   }
 });

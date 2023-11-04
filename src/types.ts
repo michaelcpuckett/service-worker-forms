@@ -6,8 +6,10 @@ export interface Todo {
 
 export type Referrer = {
   state: string;
+  url: string;
   filter?: string;
   index?: number;
+  query?: string;
 };
 
 export interface Settings {

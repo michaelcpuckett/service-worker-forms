@@ -10,9 +10,16 @@ import {DeleteTodoForm} from './DeleteTodoForm';
 export function TodosTableView(
   props: React.PropsWithoutRef<{ todos: Todo[], referrer: Referrer }>
 ) {
-  const completedTodos = props.todos.filter((todo) => todo.completed);
-  const incompleteTodos = props.todos.filter((todo) => !todo.completed);
-  const filteredTodos = props.todos.filter((todo) => {
+  const queriedTodos = props.todos.filter((todo) => {
+    if (!props.referrer.query) {
+      return true;
+    }
+
+    return todo.title.includes(props.referrer.query);
+  });
+  const completedTodos = queriedTodos.filter((todo) => todo.completed);
+  const incompleteTodos = queriedTodos.filter((todo) => !todo.completed);
+  const filteredTodos = queriedTodos.filter((todo) => {
     switch (props.referrer.filter) {
       case 'completed':
         return todo.completed;
@@ -23,9 +30,17 @@ export function TodosTableView(
     }
   });
 
+  const allTodosUrl = new URL(props.referrer.url);
+  allTodosUrl.searchParams.delete('filter');
+
+  const completedTodosUrl = new URL(props.referrer.url);
+  completedTodosUrl.searchParams.set('filter', 'completed');
+
+  const incompleteTodosUrl = new URL(props.referrer.url);
+  incompleteTodosUrl.searchParams.set('filter', 'incompleted');
+
   return (
-    <section>
-      <h2>Table View</h2>
+    <section aria-label="Table View">
       <nav aria-label="Actions">
         <fieldset>
           <legend>Filter</legend>
@@ -33,20 +48,32 @@ export function TodosTableView(
             <li>
               <a
                 aria-current={!props.referrer.filter ? 'page' : undefined}
-                href="/">All ({props.todos.length})</a>
+                href={allTodosUrl.href}>All ({props.todos.length})</a>
             </li>
             <li>
               <a
                 aria-current={props.referrer.filter === 'incompleted' ? 'page' : undefined}
-                href="/?filter=incompleted">Incomplete ({incompleteTodos.length})</a>
+                href={incompleteTodosUrl.href}>Incomplete ({props.todos.filter((todo) => !todo.completed).length})</a>
             </li>
             <li>
               <a
                 aria-current={props.referrer.filter === 'completed' ? 'page' : undefined}
-                href="/?filter=completed">Completed ({completedTodos.length})</a>
+                href={completedTodosUrl.href}>Completed ({props.todos.filter((todo) => todo.completed).length})</a>
             </li>
           </ul>
         </fieldset>
+        <form action="/api/search" method="POST">
+          <fieldset>
+            <legend>
+              Search
+            </legend>
+            <input type="hidden" name="method" value="POST" />
+            <input type="search" name="query" value={props.referrer.query ?? ''} />
+            <button type="submit">
+              Search
+            </button>
+          </fieldset>
+        </form>
       </nav>
       {props.todos.length === 0 ? (
         <p>

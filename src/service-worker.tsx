@@ -36,10 +36,13 @@ self.addEventListener("fetch", function (event: Event) {
       const state = url.searchParams.get('state') || '';
       const index = Number(url.searchParams.get('index') ?? 0);
       const filter = url.searchParams.get('filter') || '';
+      const query = url.searchParams.get('query') || '';
       const referrer = {
         state,
         index,
         filter,
+        query,
+        url: event.request.url,
       };
 
       if (URLS_TO_CACHE.includes(pathname)) {
@@ -82,6 +85,22 @@ self.addEventListener("fetch", function (event: Event) {
     const {pathname} = new URL(event.request.url);
 
     switch (pathname) {
+      case '/api/search': {
+        switch (formData.method) {
+          case 'POST': {
+            const url = new URL(event.request.referrer);
+            url.searchParams.set('state', 'SEARCH_TODOS');
+            url.searchParams.set('query', formData.query ?? '');
+
+            return new Response(null, {
+              headers: {
+                "Location": url.href,
+              },
+              status: 303,
+            });
+          }
+        }
+      }
       case '/api/todos': {
         switch (formData.method) {
           case 'POST': {
