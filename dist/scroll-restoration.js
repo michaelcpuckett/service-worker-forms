@@ -38,4 +38,28 @@ window.addEventListener('DOMContentLoaded', () => {
       inputElement.form.submit();
     });
   });
+  
+  Array.from(window.document.querySelectorAll('[type="search"]')).forEach((inputElement) => {
+    inputElement.addEventListener('input', () => {
+      if (inputElement.value === '') {
+        inputElement.form.submit();
+      }
+    });
+  });
+
+  Array.from(window.document.querySelectorAll('[autofocus]')).forEach((inputElement) => {
+    if (!(inputElement instanceof HTMLInputElement)) {
+      return;
+    }
+
+    if (inputElement.value.length === 0) {
+      return;
+    }
+
+    if (!(inputElement.type === 'text' || inputElement.type === 'search')) {
+      return;
+    }
+
+    inputElement.selectionStart = inputElement.selectionEnd = inputElement.value.length;
+  });
 });

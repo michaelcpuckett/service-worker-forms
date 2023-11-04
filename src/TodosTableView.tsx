@@ -66,7 +66,7 @@ export function TodosTableView(
               Search
             </legend>
             <input type="hidden" name="method" value="POST" />
-            <input type="search" name="query" value={props.referrer.query ?? ''} />
+            <input autoFocus={props.referrer.state === 'SEARCH_TODOS'} type="search" name="query" value={props.referrer.query ?? ''} />
             <button type="submit">
               Search
             </button>
@@ -91,7 +91,7 @@ export function TodosTableView(
                   {(props.referrer.state === 'EDITING_TODO' && index === (props.referrer.index ?? (length - 1))) ? (
                     <UpdateTodoTitleInlineForm todo={todo} autofocus={true} referrer={props.referrer} />
                   ) : (
-                    <span className="title">
+                    <span className="title" tabIndex={-1}>
                       {todo.title}
                     </span>
                   )}
