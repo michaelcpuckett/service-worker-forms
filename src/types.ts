@@ -6,6 +6,7 @@ export interface Todo {
 
 export type Referrer = {
   state: string;
+  filter?: string;
   index?: number;
 };
 

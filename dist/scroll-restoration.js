@@ -4,6 +4,9 @@ window.addEventListener('pageshow', (event) => {
   if (event.persisted) {
     window.location.reload();
   } else if (url.searchParams.has('state')) {
+    const pathname = url.pathname;
+    const filter = url.searchParams.get('filter');
+    const url = pathname + (filter ? `?filter=${filter}` : '');
     window.history.replaceState({}, '', url.pathname);
   }
 });

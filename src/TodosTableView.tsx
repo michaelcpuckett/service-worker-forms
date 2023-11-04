@@ -13,6 +13,20 @@ export function TodosTableView(
   return (
     <section>
       <h2>Table View</h2>
+      <fieldset>
+        <legend>Filter</legend>
+        <ul>
+          <li>
+            <a href="/">All</a>
+          </li>
+          <li>
+            <a href="/?filter=incompleted">Incomplete</a>
+          </li>
+          <li>
+            <a href="/?filter=completed">Completed</a>
+          </li>
+        </ul>
+      </fieldset>
       {props.todos.length === 0 ? (
         <p>
         No todos yet. Add one above.
@@ -20,7 +34,16 @@ export function TodosTableView(
       ) : (
         <table className="table-view">
           <tbody>
-            {props.todos.map((todo, index, { length }) => (
+            {props.todos.filter((todo) => {
+              switch (props.referrer.filter) {
+                case 'completed':
+                  return todo.completed;
+                case 'incompleted':
+                  return !todo.completed;
+                default:
+                  return true;
+              }
+            }).map((todo, index, { length }) => (
               <tr
                 aria-label={todo.title}
                 data-completed={todo.completed ? '' : undefined}>

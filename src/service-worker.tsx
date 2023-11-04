@@ -35,9 +35,11 @@ self.addEventListener("fetch", function (event: Event) {
       const pathname = url.pathname;
       const state = url.searchParams.get('state') || '';
       const index = Number(url.searchParams.get('index') ?? 0);
+      const filter = url.searchParams.get('filter') || '';
       const referrer = {
         state,
         index,
+        filter,
       };
 
       if (URLS_TO_CACHE.includes(pathname)) {
