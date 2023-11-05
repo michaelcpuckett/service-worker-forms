@@ -1,5 +1,5 @@
 import React from 'react';
-import { Todo } from './types';
+import { Todo } from '../types';
 
 export function ReorderTodoDownForm(props: React.PropsWithoutRef<{ todo: Todo; index: number; autofocus: boolean; isDisabled: boolean; }>) {
   return (

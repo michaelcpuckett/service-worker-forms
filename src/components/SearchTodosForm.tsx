@@ -1,5 +1,5 @@
 import React from 'react';
-import {Referrer} from './types';
+import {Referrer} from '../types';
 
 export function SearchTodosForm(props: React.PropsWithoutRef<{ referrer: Referrer }>) {
   return (

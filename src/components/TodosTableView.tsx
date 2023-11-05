@@ -1,5 +1,5 @@
 import React from "react";
-import { Todo, Referrer } from './types';
+import { Todo, Referrer } from '../types';
 import { UpdateTodoCompletedForm } from './UpdateTodoCompletedForm';
 import { UpdateTodoTitleInlineForm } from './UpdateTodoTitleInlineForm';
 import { ReorderTodoUpForm } from './ReorderTodoUpForm';

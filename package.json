@@ -9,7 +9,7 @@
   },
   "targets": {
     "default": {
-      "source": "./src/service-worker.tsx",
+      "source": "./src/app.tsx",
       "distDir": "./dist"
     }
   },

@@ -1,5 +1,5 @@
 import React from "react";
-import { Todo } from './types';
+import { Todo } from '../types';
 
 export function UpdateTodoCompletedForm(props: React.PropsWithChildren<{ todo: Todo, autofocus: boolean }>) {
   return (

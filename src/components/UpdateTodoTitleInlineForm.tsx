@@ -1,5 +1,5 @@
 import React from "react";
-import {Todo, Referrer} from './types';
+import {Todo, Referrer} from '../types';
 
 export function UpdateTodoTitleInlineForm(props: React.PropsWithChildren<{ todo: Todo; referrer: Referrer; autofocus: boolean; }>) {
   return <>

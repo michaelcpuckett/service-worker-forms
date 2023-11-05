@@ -1,5 +1,5 @@
 import React from "react";
-import { Settings } from './types';
+import { Settings } from '../types';
 import { PageShell } from './PageShell';
 
 export function SettingsPage(props: React.PropsWithChildren<{ settings: Settings }>) {

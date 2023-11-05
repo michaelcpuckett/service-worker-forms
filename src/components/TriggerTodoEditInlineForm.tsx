@@ -1,5 +1,5 @@
 import React from "react";
-import { Todo } from "./types";
+import { Todo } from "../types";
 
 export function TriggerTodoEditInlineForm(props: React.PropsWithChildren<{ todo: Todo; index: number; autofocus: boolean; }>) {
   return (
