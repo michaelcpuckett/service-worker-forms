@@ -49,6 +49,10 @@ body {
   }
 }
 
+a {
+  color: var(--swatch-interactive);
+}
+
 .container {
   width: min(100% - 2rem, 960px);
   margin-left: auto;
