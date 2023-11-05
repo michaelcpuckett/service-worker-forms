@@ -3,7 +3,7 @@ import { Settings } from "./types";
 
 export function PageShell(props: React.PropsWithChildren<{ pageTitle: string; settings: Settings }>) {
   return (
-    <html>
+    <html lang="en" className={`theme--${props.settings.theme || 'dark'}`}>
       <head>
         <title>{props.pageTitle}</title>
         <script src="/scroll-restoration.js"></script>
@@ -11,7 +11,7 @@ export function PageShell(props: React.PropsWithChildren<{ pageTitle: string; se
         <link rel="manifest" href="/manifest.json" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
-      <body className={`theme--${props.settings.theme || 'dark'}`}>
+      <body>
         {props.children}
       </body>
     </html>
