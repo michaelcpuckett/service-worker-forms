@@ -40,8 +40,7 @@ export function TodosTableView(
   return (
     <section aria-label="Table View">
       <nav aria-label="Actions">
-        <fieldset>
-          <legend>Filter</legend>
+        <div role="group" aria-label="Filter Todos">
           <ul className="no-bullet">
             <li>
               <a
@@ -59,18 +58,15 @@ export function TodosTableView(
                 href={completedTodosUrl.href}>Completed ({props.todos.filter((todo) => todo.completed).length})</a>
             </li>
           </ul>
-        </fieldset>
+        </div>
         <form action="/api/search" method="POST">
-          <fieldset>
-            <legend>
-              Search
-            </legend>
+          <div role="group" aria-label="Search Todos">
             <input type="hidden" name="method" value="POST" />
             <input autoFocus={props.referrer.state === 'SEARCH_TODOS'} type="search" name="query" value={props.referrer.query ?? ''} />
             <button type="submit">
               Search
             </button>
-          </fieldset>
+          </div>
         </form>
       </nav>
       {props.todos.length === 0 ? (
