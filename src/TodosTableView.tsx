@@ -6,6 +6,8 @@ import { ReorderTodoUpForm } from './ReorderTodoUpForm';
 import { ReorderTodoDownForm } from './ReorderTodoDownForm';
 import {TriggerTodoEditInlineForm} from './TriggerTodoEditInlineForm';
 import {DeleteTodoForm} from './DeleteTodoForm';
+import {SearchTodosForm} from './SearchTodosForm';
+import {FilterTodos} from './FilterTodos';
 
 export function TodosTableView(
   props: React.PropsWithoutRef<{ todos: Todo[], referrer: Referrer }>
@@ -28,15 +30,6 @@ export function TodosTableView(
     }
   });
 
-  const allTodosUrl = new URL(props.referrer.url);
-  allTodosUrl.searchParams.delete('filter');
-
-  const completedTodosUrl = new URL(props.referrer.url);
-  completedTodosUrl.searchParams.set('filter', 'completed');
-
-  const incompleteTodosUrl = new URL(props.referrer.url);
-  incompleteTodosUrl.searchParams.set('filter', 'incompleted');
-
   return (
     <section aria-label="Table View">
       {props.todos.length === 0 ? (
@@ -45,34 +38,8 @@ export function TodosTableView(
         </p>
       ) : <>
         <nav aria-label="Actions">
-          <div role="group" aria-label="Filter Todos">
-            <ul className="no-bullet">
-              <li>
-                <a
-                  aria-current={!props.referrer.filter ? 'page' : undefined}
-                  href={allTodosUrl.href}>All ({props.todos.length})</a>
-              </li>
-              <li>
-                <a
-                  aria-current={props.referrer.filter === 'incompleted' ? 'page' : undefined}
-                  href={incompleteTodosUrl.href}>Incomplete ({props.todos.filter((todo) => !todo.completed).length})</a>
-              </li>
-              <li>
-                <a
-                  aria-current={props.referrer.filter === 'completed' ? 'page' : undefined}
-                  href={completedTodosUrl.href}>Completed ({props.todos.filter((todo) => todo.completed).length})</a>
-              </li>
-            </ul>
-          </div>
-          <form action="/api/search" method="POST">
-            <div role="group" aria-label="Search Todos">
-              <input type="hidden" name="method" value="POST" />
-              <input autoFocus={props.referrer.state === 'SEARCH_TODOS'} type="search" name="query" value={props.referrer.query ?? ''} />
-              <button type="submit">
-                Search
-              </button>
-            </div>
-          </form>
+          <FilterTodos todos={props.todos} referrer={props.referrer} />
+          <SearchTodosForm referrer={props.referrer} />
         </nav>
         <table className="table-view">
           <tbody>
