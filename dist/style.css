@@ -210,6 +210,7 @@ button:has(svg:only-child) {
   display: flex;
   flex-wrap: wrap;
   width: 100%;
+  min-width: 300px;
 
   & label,
   & input:not([type="checkbox"]):not([type="radio"]) {
