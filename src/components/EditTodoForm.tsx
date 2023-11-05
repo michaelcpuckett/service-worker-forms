@@ -1,7 +1,7 @@
 import React from "react";
 import {Todo, Referrer} from '../types';
 
-export function UpdateTodoTitleInlineForm(props: React.PropsWithChildren<{ todo: Todo; referrer: Referrer; autofocus: boolean; }>) {
+export function EditTodoForm(props: React.PropsWithChildren<{ todo: Todo; referrer: Referrer; autofocus: boolean; }>) {
   return <>
     <form action="/api/todos" method="POST" className="inline-form">
       <input type="hidden" name="method" value="PUT" />

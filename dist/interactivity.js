@@ -62,4 +62,18 @@ window.addEventListener('DOMContentLoaded', () => {
 
     inputElement.selectionStart = inputElement.selectionEnd = inputElement.value.length;
   });
+
+  Array.from(window.document.querySelectorAll('dialog')).forEach((dialogElement) => {
+    dialogElement.addEventListener('click', (event) => {
+      if (event.target === event.currentTarget) {
+        dialogElement.querySelector('.close-button-form').submit();
+      }
+    });
+
+    dialogElement.addEventListener('keyup', (event) => {
+      if (event.key === 'Escape') {
+        dialogElement.querySelector('.close-button-form').submit();
+      }
+    });
+  });
 });

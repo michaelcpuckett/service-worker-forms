@@ -1,7 +1,6 @@
 import React from "react";
 import { Todo, Referrer } from '../types';
 import { UpdateTodoCompletedForm } from './UpdateTodoCompletedForm';
-import { UpdateTodoTitleInlineForm } from './UpdateTodoTitleInlineForm';
 import { ReorderTodoUpForm } from './ReorderTodoUpForm';
 import { ReorderTodoDownForm } from './ReorderTodoDownForm';
 import {TriggerTodoEditInlineForm} from './TriggerTodoEditInlineForm';
@@ -51,13 +50,9 @@ export function TodosTableView(
                   <UpdateTodoCompletedForm todo={todo} autofocus={(props.referrer.state === 'EDIT_TODO_COMPLETED' && index === (props.referrer.index ?? (length - 1)))} />
                 </td>
                 <td>
-                  {(props.referrer.state === 'EDITING_TODO' && index === (props.referrer.index ?? (length - 1))) ? (
-                    <UpdateTodoTitleInlineForm todo={todo} autofocus={true} referrer={props.referrer} />
-                  ) : (
-                    <span className="title" tabIndex={-1}>
-                      {todo.title}
-                    </span>
-                  )}
+                  <span className="title" tabIndex={-1}>
+                    {todo.title}
+                  </span>
                 </td>
                 <td>
                   <details>
