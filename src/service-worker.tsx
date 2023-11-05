@@ -101,6 +101,20 @@ self.addEventListener("fetch", function (event: Event) {
           }
         }
       }
+      case '/api/todos/ui': {
+        const url = new URL(event.request.referrer);
+
+        for (const [key, value] of Object.entries(formData)) {
+          url.searchParams.set(key, value);
+        }
+
+        return new Response(null, {
+          headers: {
+            "Location": url.href,
+          },
+          status: 303,
+        });
+      }
       case '/api/todos': {
         switch (formData.method) {
           case 'POST': {

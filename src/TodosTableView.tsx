@@ -39,41 +39,41 @@ export function TodosTableView(
 
   return (
     <section aria-label="Table View">
-      <nav aria-label="Actions">
-        <div role="group" aria-label="Filter Todos">
-          <ul className="no-bullet">
-            <li>
-              <a
-                aria-current={!props.referrer.filter ? 'page' : undefined}
-                href={allTodosUrl.href}>All ({props.todos.length})</a>
-            </li>
-            <li>
-              <a
-                aria-current={props.referrer.filter === 'incompleted' ? 'page' : undefined}
-                href={incompleteTodosUrl.href}>Incomplete ({props.todos.filter((todo) => !todo.completed).length})</a>
-            </li>
-            <li>
-              <a
-                aria-current={props.referrer.filter === 'completed' ? 'page' : undefined}
-                href={completedTodosUrl.href}>Completed ({props.todos.filter((todo) => todo.completed).length})</a>
-            </li>
-          </ul>
-        </div>
-        <form action="/api/search" method="POST">
-          <div role="group" aria-label="Search Todos">
-            <input type="hidden" name="method" value="POST" />
-            <input autoFocus={props.referrer.state === 'SEARCH_TODOS'} type="search" name="query" value={props.referrer.query ?? ''} />
-            <button type="submit">
-              Search
-            </button>
-          </div>
-        </form>
-      </nav>
       {props.todos.length === 0 ? (
         <p>
         No todos yet. Add one above.
         </p>
-      ) : (
+      ) : <>
+        <nav aria-label="Actions">
+          <div role="group" aria-label="Filter Todos">
+            <ul className="no-bullet">
+              <li>
+                <a
+                  aria-current={!props.referrer.filter ? 'page' : undefined}
+                  href={allTodosUrl.href}>All ({props.todos.length})</a>
+              </li>
+              <li>
+                <a
+                  aria-current={props.referrer.filter === 'incompleted' ? 'page' : undefined}
+                  href={incompleteTodosUrl.href}>Incomplete ({props.todos.filter((todo) => !todo.completed).length})</a>
+              </li>
+              <li>
+                <a
+                  aria-current={props.referrer.filter === 'completed' ? 'page' : undefined}
+                  href={completedTodosUrl.href}>Completed ({props.todos.filter((todo) => todo.completed).length})</a>
+              </li>
+            </ul>
+          </div>
+          <form action="/api/search" method="POST">
+            <div role="group" aria-label="Search Todos">
+              <input type="hidden" name="method" value="POST" />
+              <input autoFocus={props.referrer.state === 'SEARCH_TODOS'} type="search" name="query" value={props.referrer.query ?? ''} />
+              <button type="submit">
+                Search
+              </button>
+            </div>
+          </form>
+        </nav>
         <table className="table-view">
           <tbody>
             {filteredTodos.map((todo, index, { length }) => (
@@ -135,7 +135,7 @@ export function TodosTableView(
             ))}
           </tbody>
         </table>
-      )}
+      </>}
     </section>
   );
 }

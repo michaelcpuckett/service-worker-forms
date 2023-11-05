@@ -14,7 +14,7 @@ window.addEventListener('pageshow', (event) => {
     if (query) {
       nextUrl.searchParams.set('query', query);
     }
-    window.history.replaceState({}, '', nextUrl);
+    window.history.replaceState({}, '', nextUrl.pathname + nextUrl.search);
   }
 });
 

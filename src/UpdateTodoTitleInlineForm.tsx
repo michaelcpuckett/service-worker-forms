@@ -2,7 +2,7 @@ import React from "react";
 import {Todo, Referrer} from './types';
 
 export function UpdateTodoTitleInlineForm(props: React.PropsWithChildren<{ todo: Todo; referrer: Referrer; autofocus: boolean; }>) {
-  return (
+  return <>
     <form action="/api/todos" method="POST" className="inline-form">
       <input type="hidden" name="method" value="PUT" />
       <input type="hidden" name="id" value={props.todo.id} />
@@ -22,9 +22,13 @@ export function UpdateTodoTitleInlineForm(props: React.PropsWithChildren<{ todo:
       <button type="submit">
         Save
       </button>
-      <a href={`?state=EDIT_TODO_TITLE&index=${props.referrer.index}`} role="button">
-        Cancel
-      </a>
     </form>
-  )
+    <form action="/api/todos/ui" method="POST">
+      <input type="hidden" name="state" value="" />
+      <button
+        type="submit">
+        Cancel
+      </button>
+    </form>
+  </>;
 }

@@ -3,11 +3,14 @@ import { Todo } from "./types";
 
 export function TriggerTodoEditInlineForm(props: React.PropsWithChildren<{ todo: Todo; index: number; autofocus: boolean; }>) {
   return (
-    <a
-      href={`?state=EDITING_TODO&index=${props.index}`}
-      role="button"
-      autoFocus={props.autofocus}>
-      Edit
-    </a>
+    <form action="/api/todos/ui" method="POST">
+      <input type="hidden" name="state" value="EDITING_TODO" />
+      <input type="hidden" name="index" value={props.index} />
+      <button
+        type="submit"
+        autoFocus={props.autofocus}>
+        Edit
+      </button>
+    </form>
   )
 }
