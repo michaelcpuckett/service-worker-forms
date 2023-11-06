@@ -3,7 +3,7 @@ import { Todo, Referrer } from '../types';
 import { UpdateTodoCompletedForm } from './UpdateTodoCompletedForm';
 import { ReorderTodoUpForm } from './ReorderTodoUpForm';
 import { ReorderTodoDownForm } from './ReorderTodoDownForm';
-import {TriggerTodoEditInlineForm} from './TriggerTodoEditInlineForm';
+import {TriggerTodoEditForm} from './TriggerTodoEditForm';
 import {DeleteTodoForm} from './DeleteTodoForm';
 import {SearchTodosForm} from './SearchTodosForm';
 import {FilterTodos} from './FilterTodos';
@@ -77,41 +77,37 @@ export function TodosTableView(
                       aria-haspopup="true"
                       autoFocus={['REORDER_TODO_UP', 'REORDER_TODO_DOWN', 'EDIT_TODO', 'CLOSE_EDIT_TODO_DIALOG', 'CLOSE_CONFIRM_DELETE_TODO_DIALOG'].includes(props.referrer.state) && index === props.referrer.index}>
                     </summary>
-                    <ul 
+                    <div
                       role="menu"
                       id={`todos-actions-menu--${todo.id}`}
-                      aria-labelledby={`todos-actions-menu--${todo.id}`}>
-                      <li role="menuitem">
-                        <ReorderTodoUpForm
-                          todo={todo}
-                          index={props.todos.findIndex(t => t.id === filteredTodos[index - 1]?.id)}
-                          isDisabled={!filteredTodos[index - 1]}
-                          autofocus={false}
-                        />
-                      </li>
-                      <li role="menuitem">
-                        <ReorderTodoDownForm
-                          todo={todo}
-                          index={props.todos.findIndex(t => t.id === filteredTodos[index + 1]?.id)}
-                          isDisabled={!filteredTodos[index + 1]}
-                          autofocus={false}
-                        />
-                      </li>
-                      <li role="menuitem">
-                        <TriggerTodoEditInlineForm
-                          autofocus={false}
-                          todo={todo}
-                          index={index}
-                        />
-                      </li>
-                      <li role="menuitem">
-                        <DeleteTodoForm
-                          todo={todo}
-                          index={index}
-                          autofocus={false}
-                        />
-                      </li>
-                    </ul>
+                      aria-labelledby={`todos-actions-menu-trigger--${todo.id}`}>
+                      <ReorderTodoUpForm
+                        todo={todo}
+                        index={props.todos.findIndex(t => t.id === filteredTodos[index - 1]?.id)}
+                        isDisabled={!filteredTodos[index - 1]}
+                        autofocus={false}
+                        role="menuitem"
+                      />
+                      <ReorderTodoDownForm
+                        todo={todo}
+                        index={props.todos.findIndex(t => t.id === filteredTodos[index + 1]?.id)}
+                        isDisabled={!filteredTodos[index + 1]}
+                        autofocus={false}
+                        role="menuitem"
+                      />
+                      <TriggerTodoEditForm
+                        autofocus={false}
+                        todo={todo}
+                        index={index}
+                        role="menuitem"
+                      />
+                      <DeleteTodoForm
+                        todo={todo}
+                        index={index}
+                        autofocus={false}
+                        role="menuitem"
+                      />
+                    </div>
                   </details>
                 </td>
               </tr>

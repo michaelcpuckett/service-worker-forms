@@ -12,7 +12,7 @@ export function EditTodoForm(props: React.PropsWithChildren<{ todo: Todo; index:
     </form>
     <div className="modal-dialog-content" role="none">
       <h1>Edit Todo</h1>
-      <form action="/api/todos" method="POST" className="inline-form">
+      <form action="/api/todos" method="POST" className="inline-form" role="none">
         <input type="hidden" name="method" value="PUT" />
         <input type="hidden" name="id" value={props.todo.id} />
         <input type="hidden" name="completed" value={props.todo.completed ? 'on' : 'off'} />

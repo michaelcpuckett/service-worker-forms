@@ -148,27 +148,27 @@ input:not([type="checkbox"]):not([type="radio"]) {
   & th {
     text-align: start;
   }
+}
 
-  & ul {
+[role="menu"] {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  border: 1px solid;
+  list-style: none;
+  background: CanvasText;
+  color: Canvas;
+  padding: 1rem;
+  margin: 0;
+  position: absolute;
+  right: -1rem;
+  min-width: 300px;
+  z-index: 2;
+
+  & button,
+  & a {
     display: flex;
-    flex-direction: column;
-    gap: .5rem;
-    border: 1px solid;
-    list-style: none;
-    background: CanvasText;
-    color: Canvas;
-    padding: 1rem;
-    margin: 0;
-    position: absolute;
-    right: -1rem;
-    min-width: 300px;
-    z-index: 2;
-
-    & button,
-    & a {
-      display: flex;
-      width: 100%;
-    }
+    width: 100%;
   }
 }
 

@@ -9,11 +9,9 @@ export function SettingsPage(props: React.PropsWithChildren<{ settings: Settings
         <nav>
           <a href="/">Home</a>
         </nav>
-      </div>
-      <div className="container">
         <main>
           <h1>Settings</h1>
-          <form action="/api/settings" method="POST">
+          <form action="/api/settings" method="POST" role="none">
             <input type="hidden" name="method" value="PUT" />
             <label>
               Theme

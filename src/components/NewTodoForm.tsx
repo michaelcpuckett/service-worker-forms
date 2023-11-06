@@ -3,7 +3,7 @@ import { Referrer, Todo } from "../types";
 
 export function NewTodoForm(props: React.PropsWithChildren<{ referrer: Referrer; todos: Todo[]; }>) {
   return (
-    <form action="/api/todos" method="POST" className="inline-form">
+    <form action="/api/todos" method="POST" className="inline-form" role="none">
       <div role="group" aria-label="New Todo">
         <input type="hidden" name="method" value="POST" />
         <label>

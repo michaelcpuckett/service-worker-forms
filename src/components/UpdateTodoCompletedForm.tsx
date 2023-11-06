@@ -3,7 +3,7 @@ import { Todo } from '../types';
 
 export function UpdateTodoCompletedForm(props: React.PropsWithChildren<{ todo: Todo, autofocus: boolean }>) {
   return (
-    <form action="/api/todos" method="POST" data-auto-submit>
+    <form action="/api/todos" method="POST" data-auto-submit role="none">
       <input type="hidden" name="method" value="PUT" />
       <input type="hidden" name="id" value={props.todo.id} />
       <input type="hidden" name="title" value={props.todo.title} />
