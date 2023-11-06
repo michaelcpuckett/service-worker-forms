@@ -9,13 +9,11 @@ import { ModalDialog } from '../components/ModalDialog';
 export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; referrer: Referrer; settings: Settings; }>) {
   return (
     <PageShell pageTitle="Todos" settings={props.settings}>
-      <div className="container">
+      <div className="container" inert={props.referrer.state === 'EDITING_TODO' ? '' : null}>
         <nav>
           <a href="/settings">Settings</a>
         </nav>
-      </div>
-      <div className="container">
-        <main inert={props.referrer.state === 'EDITING_TODO' ? '' : null}>
+        <main>
           <h1>Todos</h1>
           <NewTodoForm todos={props.todos || []} referrer={props.referrer} />
           <TodosTableView todos={props.todos || []} referrer={props.referrer} />
