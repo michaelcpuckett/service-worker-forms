@@ -96,9 +96,14 @@ input:not([type="checkbox"]):not([type="radio"]) {
 
 .table-view {
   width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   
-  & tbody {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+  & thead,tbody {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    gap: .5rem;
   }
 
   & tr {
@@ -115,12 +120,17 @@ input:not([type="checkbox"]):not([type="radio"]) {
     }
   }
 
-  & td {
+  & th,td {
     display: flex;
     place-items: center;
-    padding: .5rem;
+    padding: .5rem 0;
+
+    &:is(:first-child, :last-child) {
+      place-content: center;
+    }
 
     & form {
+      place-content: center;
       flex: 1;
       display: flex;
       flex-wrap: wrap;
@@ -140,6 +150,10 @@ input:not([type="checkbox"]):not([type="radio"]) {
     }
   }
 
+  & th {
+    text-align: start;
+  }
+
   & ul {
     display: flex;
     flex-direction: column;
@@ -153,7 +167,7 @@ input:not([type="checkbox"]):not([type="radio"]) {
     position: absolute;
     right: -1rem;
     min-width: 300px;
-    z-index: 1;
+    z-index: 2;
 
     & button,
     & a {
@@ -212,8 +226,7 @@ button:has(svg:only-child) {
   width: 100%;
   min-width: 300px;
 
-  & label,
-  & input:not([type="checkbox"]):not([type="radio"]) {
+  & label, input:not([type="checkbox"]):not([type="radio"]) {
     flex: 1;
   }
 }
@@ -272,4 +285,11 @@ dialog[open] {
 
 .close-dialog-form {
   grid-column: 2 / 3;
+}
+
+details[open] summary:before {
+  content: '';
+  z-index: 1;
+  position: fixed;
+  inset: 0;
 }

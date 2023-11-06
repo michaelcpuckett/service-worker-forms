@@ -41,6 +41,19 @@ export function TodosTableView(
           <SearchTodosForm referrer={props.referrer} />
         </nav>
         <table className="table-view">
+          <thead>
+            <tr>
+              <th>
+                Completed
+              </th>
+              <th>
+                Title
+              </th>
+              <th>
+                Actions
+              </th>
+            </tr>
+          </thead>
           <tbody>
             {filteredTodos.map((todo, index, { length }) => (
               <tr
