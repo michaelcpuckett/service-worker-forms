@@ -1,17 +1,16 @@
 import React from "react";
 import {Todo} from '../types';
+import {ModalDialog} from './ModalDialog';
 
-export function EditTodoForm(props: React.PropsWithChildren<{ todo: Todo; index: number; autofocus: boolean; }>) {
-  return <>
-    <form action="/api/todos/ui" method="POST" className="close-dialog-form" role="none">
-      <input type="hidden" name="state" value="CLOSE_EDIT_TODO_DIALOG" />
-      <input type="hidden" name="index" value={props.index} />
-      <button className="button" type="submit" aria-label="Close">
-        X
-      </button>
-    </form>
-    <div className="modal-dialog-content" role="none">
-      <h1>Edit Todo</h1>
+export function EditTodoModalDialog(props: React.PropsWithChildren<{ todo: Todo; index: number; }>) {
+  return (
+    <ModalDialog
+      open
+      closeButtonData={{
+        state: 'CLOSE_EDIT_TODO_DIALOG',
+        index: props.index,
+      }}
+      heading={<>Edit Todo</>}>
       <form action="/api/todos" method="POST" className="inline-form" role="none">
         <input type="hidden" name="method" value="PUT" />
         <input type="hidden" name="id" value={props.todo.id} />
@@ -20,7 +19,7 @@ export function EditTodoForm(props: React.PropsWithChildren<{ todo: Todo; index:
           <span>Title</span>
           <input
             autoComplete="off"
-            data-auto-focus={props.autofocus}
+            data-auto-focus="true"
             required
             type="text"
             name="title"
@@ -41,6 +40,6 @@ export function EditTodoForm(props: React.PropsWithChildren<{ todo: Todo; index:
           Cancel
         </button>
       </form>
-    </div>
-  </>;
+    </ModalDialog>
+  );
 }

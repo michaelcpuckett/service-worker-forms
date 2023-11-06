@@ -3,9 +3,9 @@ import { Referrer, Settings, Todo } from '../types';
 import {TodosTableView} from '../components/TodosTableView';
 import {NewTodoForm} from '../components/NewTodoForm';
 import { PageShell } from './PageShell';
-import { EditTodoForm } from '../components/EditTodoForm';
-import { ModalDialog } from '../components/ModalDialog';
-import { ConfirmDeleteTodoForm } from '../components/ConfirmDeleteTodoForm';
+import { EditTodoModalDialog } from '../dialogs/EditTodoModalDialog';
+import { ModalDialog } from '../dialogs/ModalDialog';
+import { ConfirmDeleteModalDialog } from '../dialogs/ConfirmDeleteModalDialog';
 
 export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; referrer: Referrer; settings: Settings; }>) {
   return (
@@ -21,22 +21,18 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
         </main>
       </div>
       {props.referrer.state === 'EDITING_TODO' ? (
-        <ModalDialog open>
-          <EditTodoForm
-            index={props.referrer.index || 0}
-            todo={(props.todos || [])[Number(props.referrer.index)]}
-            autofocus={true}
-          />
-        </ModalDialog>
+        <EditTodoModalDialog
+          index={props.referrer.index || 0}
+          todo={(props.todos || [])[Number(props.referrer.index)]}
+        />
       ) : null}
       {props.referrer.state === 'CONFIRMING_DELETE_TODO' ? (
-        <ModalDialog open>
-          <ConfirmDeleteTodoForm
-            todo={(props.todos || [])[Number(props.referrer.index)]}
-            autofocus={true}
-            referrer={props.referrer}
-          />
-        </ModalDialog>
+        <ConfirmDeleteModalDialog
+          referrer={props.referrer}
+          todos={props.todos || []}
+          index={props.referrer.index || 0}
+          todo={(props.todos || [])[Number(props.referrer.index)]}
+        />
       ) : null}
     </PageShell>
   );
