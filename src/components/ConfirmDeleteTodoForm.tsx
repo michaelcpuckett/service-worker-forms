@@ -23,7 +23,7 @@ export function ConfirmDeleteTodoForm(
         <blockquote>
           <strong>{props.todo.title}</strong>
         </blockquote>
-        <button type="submit" autoFocus={props.autofocus}>
+        <button type="submit" data-auto-focus={props.autofocus}>
           Delete
         </button>
       </form>

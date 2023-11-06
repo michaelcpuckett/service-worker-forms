@@ -16,7 +16,7 @@ export function ReorderTodoUpForm(props: React.PropsWithChildren<{ todo: Todo; i
       <button
         disabled={props.isDisabled}
         type="submit"
-        autoFocus={props.autofocus}
+        data-auto-focus={props.autofocus}
       >
         Move Up
       </button>

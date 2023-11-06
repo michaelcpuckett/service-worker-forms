@@ -21,10 +21,6 @@ window.addEventListener('pageshow', (event) => {
 const STORAGE_KEY = 'scroll-position-y';
 const windowY = sessionStorage.getItem(STORAGE_KEY) || 0;
 
-window.addEventListener("DOMContentLoaded", () => {
-  window.scrollTo(0, windowY);
-});
-
 const handleScroll = () => {
   window.sessionStorage.setItem(STORAGE_KEY, window.scrollY);
 };
@@ -32,8 +28,17 @@ const handleScroll = () => {
 window.addEventListener('scroll', handleScroll);
 
 window.addEventListener('DOMContentLoaded', () => {
+  const autofocusElement = window.document.querySelector('[data-auto-focus="true"]');
+
+  console.log(autofocusElement);
+
+  autofocusElement?.focus({
+    preventScroll: true,
+  });
+
+  window.scrollTo(0, windowY);
+
   Array.from(window.document.querySelectorAll('form[data-auto-submit] :is([type="checkbox"], [type="radio"])')).forEach((inputElement) => {
-    console.log(inputElement);
     inputElement.addEventListener('input', () => {
       inputElement.form.submit();
     });

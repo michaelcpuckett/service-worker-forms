@@ -1,7 +1,7 @@
 import React from "react";
-import {Todo, Referrer} from '../types';
+import {Todo} from '../types';
 
-export function EditTodoForm(props: React.PropsWithChildren<{ todo: Todo; index: number; referrer: Referrer; autofocus: boolean; }>) {
+export function EditTodoForm(props: React.PropsWithChildren<{ todo: Todo; index: number; autofocus: boolean; }>) {
   return <>
     <form action="/api/todos/ui" method="POST" className="close-dialog-form" role="none">
       <input type="hidden" name="state" value="CLOSE_EDIT_TODO_DIALOG" />

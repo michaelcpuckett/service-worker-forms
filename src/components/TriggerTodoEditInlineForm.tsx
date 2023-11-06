@@ -8,7 +8,7 @@ export function TriggerTodoEditInlineForm(props: React.PropsWithChildren<{ todo:
       <input type="hidden" name="index" value={props.index} />
       <button
         type="submit"
-        autoFocus={props.autofocus}>
+        data-auto-focus={props.autofocus}>
         Edit
       </button>
     </form>

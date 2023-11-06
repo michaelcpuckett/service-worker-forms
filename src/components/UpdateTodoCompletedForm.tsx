@@ -8,7 +8,7 @@ export function UpdateTodoCompletedForm(props: React.PropsWithChildren<{ todo: T
       <input type="hidden" name="id" value={props.todo.id} />
       <input type="hidden" name="title" value={props.todo.title} />
       <input
-        autoFocus={props.autofocus}
+        data-auto-focus={props.autofocus}
         name="completed"
         type="checkbox"
         checked={props.todo.completed}

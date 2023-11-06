@@ -26,7 +26,6 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
             index={props.referrer.index || 0}
             todo={(props.todos || [])[Number(props.referrer.index)]}
             autofocus={true}
-            referrer={props.referrer}
           />
         </ModalDialog>
       ) : null}
