@@ -85,27 +85,27 @@ export function TodosTableView(
                         todo={todo}
                         index={props.todos.findIndex(t => t.id === filteredTodos[index - 1]?.id)}
                         isDisabled={!filteredTodos[index - 1]}
-                        autofocus={false}
                         role="menuitem"
+                        tabindex={0}
                       />
                       <ReorderTodoDownForm
                         todo={todo}
                         index={props.todos.findIndex(t => t.id === filteredTodos[index + 1]?.id)}
                         isDisabled={!filteredTodos[index + 1]}
-                        autofocus={false}
                         role="menuitem"
+                        tabindex={-1}
                       />
                       <TriggerTodoEditForm
-                        autofocus={false}
                         todo={todo}
                         index={index}
                         role="menuitem"
+                        tabindex={-1}
                       />
                       <DeleteTodoForm
                         todo={todo}
                         index={index}
-                        autofocus={false}
                         role="menuitem"
+                        tabindex={-1}
                       />
                     </div>
                   </details>

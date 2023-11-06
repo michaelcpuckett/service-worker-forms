@@ -15,14 +15,14 @@ export function ConfirmDeleteTodoForm(
       <button type="submit" aria-label="Close dialog">X</button>
     </form>
     <div className="modal-dialog-content" role="none">
-      <form action="/api/todos" method="POST">
+      <h1>Confirm Delete Todo</h1>
+      <p>Are you sure you want to delete this todo?</p>
+      <blockquote>
+        <strong>{props.todo.title}</strong>
+      </blockquote>
+      <form action="/api/todos" method="POST" role="none">
         <input type="hidden" name="method" value="DELETE" />
         <input type="hidden" name="id" value={props.todo.id} />
-        <h1>Confirm Delete Todo</h1>
-        <p>Are you sure you want to delete this todo?</p>
-        <blockquote>
-          <strong>{props.todo.title}</strong>
-        </blockquote>
         <button type="submit" data-auto-focus={props.autofocus}>
           Delete
         </button>

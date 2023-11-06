@@ -19,7 +19,6 @@ window.addEventListener('pageshow', (event) => {
 });
 
 const STORAGE_KEY = 'scroll-position-y';
-const windowY = sessionStorage.getItem(STORAGE_KEY) || 0;
 
 const handleScroll = () => {
   window.sessionStorage.setItem(STORAGE_KEY, window.scrollY);
@@ -27,17 +26,20 @@ const handleScroll = () => {
 
 window.addEventListener('scroll', handleScroll);
 
-window.addEventListener('DOMContentLoaded', () => {
-  const autofocusElement = window.document.querySelector('[data-auto-focus="true"]');
+window.addEventListener('DOMContentLoaded', async () => {
+  await new Promise(window.requestAnimationFrame);
 
-  console.log(autofocusElement);
+  const autofocusElement = window.document.querySelector('[data-auto-focus="true"]');
 
   autofocusElement?.focus({
     preventScroll: true,
   });
 
+  const windowY = sessionStorage.getItem(STORAGE_KEY) || 0;
   window.scrollTo(0, windowY);
+});
 
+window.addEventListener('DOMContentLoaded', () => {
   Array.from(window.document.querySelectorAll('form[data-auto-submit] :is([type="checkbox"], [type="radio"])')).forEach((inputElement) => {
     inputElement.addEventListener('input', () => {
       inputElement.form.submit();
@@ -52,7 +54,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  Array.from(window.document.querySelectorAll('[autofocus]')).forEach((inputElement) => {
+  Array.from(window.document.querySelectorAll('[data-auto-focus="true"]')).forEach((inputElement) => {
     if (!(inputElement instanceof HTMLInputElement)) {
       return;
     }
@@ -78,6 +80,49 @@ window.addEventListener('DOMContentLoaded', () => {
     dialogElement.addEventListener('keyup', (event) => {
       if (event.key === 'Escape') {
         dialogElement.querySelector('.close-dialog-form').submit();
+      }
+    });
+  });
+
+  Array.from(window.document.querySelectorAll('[role="menu"]')).forEach((menuElement) => {
+    const detailsElement = menuElement.closest('details');
+    const itemElements = Array.from(menuElement.querySelectorAll('[role="menuitem"]'));
+
+    detailsElement.addEventListener('toggle', () => {
+      if (detailsElement.open) {
+        itemElements.find((element) => element.getAttribute('tabindex') === '0').focus();
+      }
+    });
+    
+    menuElement.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowUp') {
+        const currentItemElement = itemElements.find((itemElement) => itemElement.matches('[tabindex="0"]'));
+        const index = itemElements.indexOf(currentItemElement);
+        const previousItemElement = itemElements[index - 1] || itemElements[itemElements.length - 1];
+
+        if (previousItemElement instanceof HTMLElement) {
+          currentItemElement.setAttribute('tabindex', '-1');
+          previousItemElement.setAttribute('tabindex', '0');
+          previousItemElement.focus();
+        }
+      }
+
+      if (event.key === 'ArrowDown') {
+        const itemElements = Array.from(menuElement.querySelectorAll('[role="menuitem"]'));
+        const currentItemElement = itemElements.find((itemElement) => itemElement.matches('[tabindex="0"]'));
+        const index = itemElements.indexOf(currentItemElement);
+        const nextItemElement = itemElements[index + 1] || itemElements[0];
+
+        if (nextItemElement instanceof HTMLElement) {
+          currentItemElement.setAttribute('tabindex', '-1');
+          nextItemElement.setAttribute('tabindex', '0');
+          nextItemElement.focus();
+        }
+      }
+
+      if (event.key === 'Escape') {
+        detailsElement.querySelector('summary').focus();
+        detailsElement.removeAttribute('open');
       }
     });
   });

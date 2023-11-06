@@ -81,7 +81,7 @@ button,
   text-decoration: none;
   cursor: pointer;
 
-  &[disabled] {
+  &[aria-disabled="true"] {
     opacity: .667;
     cursor: not-allowed;
   }

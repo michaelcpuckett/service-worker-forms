@@ -20,7 +20,7 @@ export function EditTodoForm(props: React.PropsWithChildren<{ todo: Todo; index:
           <span>Title</span>
           <input
             autoComplete="off"
-            autoFocus
+            data-auto-focus={props.autofocus}
             required
             type="text"
             name="title"
