@@ -24,6 +24,7 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
       {props.referrer.state === 'EDITING_TODO' ? (
         <ModalDialog open>
           <EditTodoForm
+            index={props.referrer.index || 0}
             todo={(props.todos || [])[Number(props.referrer.index)]}
             autofocus={true}
             referrer={props.referrer}

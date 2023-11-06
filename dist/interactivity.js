@@ -66,13 +66,13 @@ window.addEventListener('DOMContentLoaded', () => {
   Array.from(window.document.querySelectorAll('dialog')).forEach((dialogElement) => {
     dialogElement.addEventListener('click', (event) => {
       if (event.target === event.currentTarget) {
-        dialogElement.querySelector('.close-button-form').submit();
+        dialogElement.querySelector('.close-dialog-form').submit();
       }
     });
 
     dialogElement.addEventListener('keyup', (event) => {
       if (event.key === 'Escape') {
-        dialogElement.querySelector('.close-button-form').submit();
+        dialogElement.querySelector('.close-dialog-form').submit();
       }
     });
   });

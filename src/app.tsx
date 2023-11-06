@@ -174,7 +174,7 @@ self.addEventListener("fetch", function (event: Event) {
             await editTodoInIndexedDb(todo, id, db);
 
             const url = new URL(event.request.referrer);
-            url.searchParams.set('state', prev.completed !== todo.completed ? 'EDIT_TODO_COMPLETED' : 'EDIT_TODO_TITLE');
+            url.searchParams.set('state', prev.completed !== todo.completed ? 'EDIT_TODO_COMPLETED' : 'EDIT_TODO');
             url.searchParams.set('index', `${index}`);
 
             return new Response(null, {

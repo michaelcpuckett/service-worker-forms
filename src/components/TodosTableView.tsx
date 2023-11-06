@@ -47,7 +47,7 @@ export function TodosTableView(
                 aria-label={todo.title}
                 data-completed={todo.completed ? '' : undefined}>
                 <td>
-                  <UpdateTodoCompletedForm todo={todo} autofocus={(props.referrer.state === 'EDIT_TODO_COMPLETED' && index === (props.referrer.index ?? (length - 1)))} />
+                  <UpdateTodoCompletedForm todo={todo} autofocus={(['EDIT_TODO_COMPLETED'].includes(props.referrer.state) && index === (props.referrer.index ?? (length - 1)))} />
                 </td>
                 <td>
                   <span className="title" tabIndex={-1}>
@@ -56,7 +56,7 @@ export function TodosTableView(
                 </td>
                 <td>
                   <details>
-                    <summary autoFocus={['REORDER_TODO_UP', 'REORDER_TODO_DOWN', 'DELETE_TODO', 'EDIT_TODO_TITLE'].includes(props.referrer.state) && index === props.referrer.index}></summary>
+                    <summary autoFocus={['REORDER_TODO_UP', 'REORDER_TODO_DOWN', 'DELETE_TODO', 'EDIT_TODO', 'CLOSE_EDIT_TODO_DIALOG'].includes(props.referrer.state) && index === props.referrer.index}></summary>
                     <ul>
                       <li>
                         <ReorderTodoUpForm
@@ -82,7 +82,7 @@ export function TodosTableView(
                       </li>
                       <li>
                         <TriggerTodoEditInlineForm
-                          autofocus={(props.referrer.state === 'EDIT_TODO_TITLE' && index === (props.referrer.index ?? (length - 1)))}
+                          autofocus={false}
                           todo={todo}
                           index={index}
                         />
