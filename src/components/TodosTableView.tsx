@@ -68,10 +68,20 @@ export function TodosTableView(
                   </span>
                 </td>
                 <td>
-                  <details>
-                    <summary autoFocus={['REORDER_TODO_UP', 'REORDER_TODO_DOWN', 'EDIT_TODO', 'CLOSE_EDIT_TODO_DIALOG', 'CLOSE_CONFIRM_DELETE_TODO_DIALOG'].includes(props.referrer.state) && index === props.referrer.index}></summary>
-                    <ul>
-                      <li>
+                  <details role="none">
+                    <summary
+                      id={`todos-actions-menu-trigger--${todo.id}`}
+                      aria-controls={`todos-actions-menu--${todo.id}`}
+                      role="button"
+                      aria-label="Actions"
+                      aria-haspopup="true"
+                      autoFocus={['REORDER_TODO_UP', 'REORDER_TODO_DOWN', 'EDIT_TODO', 'CLOSE_EDIT_TODO_DIALOG', 'CLOSE_CONFIRM_DELETE_TODO_DIALOG'].includes(props.referrer.state) && index === props.referrer.index}>
+                    </summary>
+                    <ul 
+                      role="menu"
+                      id={`todos-actions-menu--${todo.id}`}
+                      aria-labelledby={`todos-actions-menu--${todo.id}`}>
+                      <li role="menuitem">
                         <ReorderTodoUpForm
                           todo={todo}
                           index={props.todos.findIndex(t => t.id === filteredTodos[index - 1]?.id)}
@@ -79,7 +89,7 @@ export function TodosTableView(
                           autofocus={false}
                         />
                       </li>
-                      <li>
+                      <li role="menuitem">
                         <ReorderTodoDownForm
                           todo={todo}
                           index={props.todos.findIndex(t => t.id === filteredTodos[index + 1]?.id)}
@@ -87,14 +97,14 @@ export function TodosTableView(
                           autofocus={false}
                         />
                       </li>
-                      <li>
+                      <li role="menuitem">
                         <TriggerTodoEditInlineForm
                           autofocus={false}
                           todo={todo}
                           index={index}
                         />
                       </li>
-                      <li>
+                      <li role="menuitem">
                         <DeleteTodoForm
                           todo={todo}
                           index={index}
