@@ -3,7 +3,7 @@
 }
 
 html {
-  font-size: 14px;
+  font-size: 16px;
   --swatch-interactive: LinkText;
   --swatch-gray-background: #ccc;
   --swatch-gray-text: #333;
@@ -68,9 +68,20 @@ nav {
   margin-top: 1rem;
 }
 
-button,
-[role="button"] {
-  padding: .5rem;
+button {
+  padding: unset;
+  margin: unset;
+  border: unset;
+  border-radius: unset;
+  font: unset;
+  box-shadow: unset;
+  color: unset;
+  background: unset;
+  cursor: pointer;
+}
+
+.button {
+  padding: .5rem 1rem;
   margin: 0;
   border: 1px solid;
   border-radius: 0;
@@ -79,7 +90,11 @@ button,
   background: var(--swatch-button-background);
   color: var(--swatch-button-text);
   text-decoration: none;
-  cursor: pointer;
+  min-width: 48px;
+  min-height: 48px;
+  display: flex;
+  place-items: center;
+  place-content: center;
 
   &[aria-disabled="true"] {
     opacity: .667;
@@ -88,7 +103,7 @@ button,
 }
 
 input:not([type="checkbox"]):not([type="radio"]) {
-  padding: .5rem;
+  padding: 1rem;
   margin: 0;
   border: 1px solid;
   box-shadow: none;
@@ -170,6 +185,14 @@ input:not([type="checkbox"]):not([type="radio"]) {
     display: flex;
     width: 100%;
   }
+}
+
+summary {
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
 }
 
 .no-bullet {
@@ -302,4 +325,12 @@ details[open] summary:before {
   z-index: 1;
   position: fixed;
   inset: 0;
+}
+
+details:has([role="menu"]) summary {
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid black;
+  background: white;
+  padding: 8px 10px 6px 10px;
 }

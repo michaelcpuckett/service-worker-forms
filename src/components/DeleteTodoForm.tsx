@@ -7,6 +7,7 @@ export function DeleteTodoForm(props: React.PropsWithChildren<{ todo: Todo; auto
       <input type="hidden" name="state" value="CONFIRMING_DELETE_TODO" />
       <input type="hidden" name="index" value={props.index} />
       <button
+        className="button"
         data-auto-focus={props.autofocus}
         tabIndex={props.tabindex}
         role={props.role}

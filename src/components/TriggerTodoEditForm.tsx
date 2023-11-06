@@ -7,6 +7,7 @@ export function TriggerTodoEditForm(props: React.PropsWithChildren<{ todo: Todo;
       <input type="hidden" name="state" value="EDITING_TODO" />
       <input type="hidden" name="index" value={props.index} />
       <button
+        className="button"
         tabIndex={props.tabindex}
         role={props.role}
         type="submit"

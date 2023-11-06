@@ -14,12 +14,12 @@ export function ReorderTodoUpForm(props: React.PropsWithChildren<{ todo: Todo; i
       />
       <input type="hidden" name="index" value={props.index} />
       <button
+        className="button"
         tabIndex={props.tabindex}
         role={props.role}
         type={props.isDisabled ? 'button' : 'submit'}
         data-auto-focus={props.autofocus}
-        aria-disabled={props.isDisabled}
-      >
+        aria-disabled={props.isDisabled}>
         Move Up
       </button>
     </form>

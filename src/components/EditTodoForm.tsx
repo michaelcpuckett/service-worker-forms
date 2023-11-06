@@ -6,7 +6,7 @@ export function EditTodoForm(props: React.PropsWithChildren<{ todo: Todo; index:
     <form action="/api/todos/ui" method="POST" className="close-dialog-form" role="none">
       <input type="hidden" name="state" value="CLOSE_EDIT_TODO_DIALOG" />
       <input type="hidden" name="index" value={props.index} />
-      <button type="submit" aria-label="Close">
+      <button className="button" type="submit" aria-label="Close">
         X
       </button>
     </form>
@@ -28,7 +28,7 @@ export function EditTodoForm(props: React.PropsWithChildren<{ todo: Todo; index:
             value={props.todo.title}
           />
         </label>
-        <button type="submit">
+        <button className="button" type="submit">
           Save
         </button>
       </form>
@@ -36,6 +36,7 @@ export function EditTodoForm(props: React.PropsWithChildren<{ todo: Todo; index:
         <input type="hidden" name="state" value="CLOSE_EDIT_TODO_DIALOG" />
         <input type="hidden" name="index" value={props.index} />
         <button
+          className="button"
           type="submit">
           Cancel
         </button>

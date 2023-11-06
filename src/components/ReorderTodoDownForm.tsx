@@ -10,6 +10,7 @@ export function ReorderTodoDownForm(props: React.PropsWithoutRef<{ todo: Todo; i
       <input type="hidden" name="completed" value={props.todo.completed ? 'on' : 'off'} />
       <input type="hidden" name="index" value={props.index} />
       <button
+        className="button"
         tabIndex={props.tabindex}
         role={props.role}
         type={props.isDisabled ? 'button' : 'submit'}

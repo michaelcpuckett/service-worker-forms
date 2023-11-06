@@ -12,7 +12,7 @@ export function ConfirmDeleteTodoForm(
     <form action="/api/todos/ui" method="POST" className="close-dialog-form" role="none">
       <input type="hidden" name="state" value="CLOSE_CONFIRM_DELETE_TODO_DIALOG" />
       <input type="hidden" name="index" value={props.referrer.index} />
-      <button type="submit" aria-label="Close dialog">X</button>
+      <button className="button" type="submit" aria-label="Close dialog">X</button>
     </form>
     <div className="modal-dialog-content" role="none">
       <h1>Confirm Delete Todo</h1>
@@ -23,14 +23,14 @@ export function ConfirmDeleteTodoForm(
       <form action="/api/todos" method="POST" role="none">
         <input type="hidden" name="method" value="DELETE" />
         <input type="hidden" name="id" value={props.todo.id} />
-        <button type="submit" data-auto-focus={props.autofocus}>
+        <button className="button" type="submit" data-auto-focus={props.autofocus}>
           Delete
         </button>
       </form>
       <form action="/api/todos/ui" method="POST" role="none">
         <input type="hidden" name="state" value="CLOSE_CONFIRM_DELETE_TODO_DIALOG" />
         <input type="hidden" name="index" value={props.referrer.index} />
-        <button type="submit">Cancel</button>
+        <button className="button" type="submit">Cancel</button>
       </form>
     </div>
   </>;

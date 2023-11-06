@@ -15,7 +15,7 @@ export function UpdateTodoCompletedForm(props: React.PropsWithChildren<{ todo: T
       />
       <noscript>
         <br />
-        <button type="submit">
+        <button className="button" type="submit">
           Update
         </button>
       </noscript>
