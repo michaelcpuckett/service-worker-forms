@@ -5,6 +5,7 @@ import {NewTodoForm} from '../components/NewTodoForm';
 import { PageShell } from './PageShell';
 import { EditTodoModalDialog } from '../dialogs/EditTodoModalDialog';
 import { ConfirmDeleteModalDialog } from '../dialogs/ConfirmDeleteModalDialog';
+import {PropertiesActionMenu} from '../components/PropertiesActionMenu';
 
 export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; referrer: Referrer; settings: Settings; }>) {
   return (
@@ -14,7 +15,10 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
           <a href="/settings">Settings</a>
         </nav>
         <main>
-          <h1>Todos</h1>
+          <header>
+            <h1>Todos</h1>
+            <PropertiesActionMenu />
+          </header>
           <NewTodoForm todos={props.todos || []} referrer={props.referrer} />
           <TodosTableView todos={props.todos || []} referrer={props.referrer} />
         </main>
