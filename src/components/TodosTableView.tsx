@@ -69,20 +69,14 @@ export function TodosTableView(
                 </td>
                 <td>
                   <details>
-                    <summary autoFocus={['REORDER_TODO_UP', 'REORDER_TODO_DOWN', 'DELETE_TODO', 'EDIT_TODO', 'CLOSE_EDIT_TODO_DIALOG'].includes(props.referrer.state) && index === props.referrer.index}></summary>
+                    <summary autoFocus={['REORDER_TODO_UP', 'REORDER_TODO_DOWN', 'EDIT_TODO', 'CLOSE_EDIT_TODO_DIALOG', 'CLOSE_CONFIRM_DELETE_TODO_DIALOG'].includes(props.referrer.state) && index === props.referrer.index}></summary>
                     <ul>
                       <li>
                         <ReorderTodoUpForm
                           todo={todo}
                           index={props.todos.findIndex(t => t.id === filteredTodos[index - 1]?.id)}
                           isDisabled={!filteredTodos[index - 1]}
-                          autofocus={
-                            (props.referrer.state === "REORDER_TODO_UP" &&
-                              index === props.referrer.index) ||
-                            (props.referrer.state === "REORDER_TODO_DOWN" &&
-                              index === props.referrer.index &&
-                              index === props.todos.length - 1)
-                          }
+                          autofocus={false}
                         />
                       </li>
                       <li>
@@ -90,7 +84,7 @@ export function TodosTableView(
                           todo={todo}
                           index={props.todos.findIndex(t => t.id === filteredTodos[index + 1]?.id)}
                           isDisabled={!filteredTodos[index + 1]}
-                          autofocus={(props.referrer.state === 'REORDER_TODO_DOWN' && index === props.referrer.index) || (props.referrer.state === 'REORDER_TODO_UP' && index === 0 && props.referrer.index === 0)}
+                          autofocus={false}
                         />
                       </li>
                       <li>
@@ -101,7 +95,11 @@ export function TodosTableView(
                         />
                       </li>
                       <li>
-                        <DeleteTodoForm todo={todo} autofocus={(props.referrer.state === 'DELETE_TODO' && index === Math.min(length - 1, Math.max(0, (props.referrer.index ?? length))))} />
+                        <DeleteTodoForm
+                          todo={todo}
+                          index={index}
+                          autofocus={false}
+                        />
                       </li>
                     </ul>
                   </details>
