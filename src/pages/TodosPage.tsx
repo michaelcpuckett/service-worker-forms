@@ -4,7 +4,6 @@ import {TodosTableView} from '../components/TodosTableView';
 import {NewTodoForm} from '../components/NewTodoForm';
 import { PageShell } from './PageShell';
 import { EditTodoModalDialog } from '../dialogs/EditTodoModalDialog';
-import { ModalDialog } from '../dialogs/ModalDialog';
 import { ConfirmDeleteModalDialog } from '../dialogs/ConfirmDeleteModalDialog';
 
 export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; referrer: Referrer; settings: Settings; }>) {

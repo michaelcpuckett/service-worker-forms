@@ -2,7 +2,7 @@ import { renderToString } from "react-dom/server";
 import { TodosPage } from "./pages/TodosPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { Todo, Referrer, Settings } from "./types";
-import { openDB, DBSchema, IDBPDatabase, wrap } from 'idb';
+import { IDBPDatabase, wrap } from 'idb';
 
 const URLS_TO_CACHE = [
   '/style.css',
