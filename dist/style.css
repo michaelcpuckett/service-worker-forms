@@ -18,6 +18,11 @@ html {
     --swatch-button-background: #666;
     --swatch-button-text: #fff;
   }
+
+  
+  &:has(dialog[open]) {
+    overflow: hidden;
+  }
 }
 
 body {
@@ -129,18 +134,8 @@ input:not([type="checkbox"]):not([type="radio"]) {
       place-content: center;
     }
 
-    & form {
-      place-content: center;
+    & label {
       flex: 1;
-      display: flex;
-      flex-wrap: wrap;
-      place-items: center;
-      gap: 1rem;
-      width: 100%;
-
-      & label {
-        flex: 1;
-      }
     }
 
     & span {
@@ -183,6 +178,10 @@ input:not([type="checkbox"]):not([type="radio"]) {
   padding: 0;
   display: flex;
   gap: 1rem;
+}
+
+form {
+  display: contents;
 }
 
 table,
@@ -249,6 +248,7 @@ nav {
 }
 
 dialog[open] {
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -286,6 +286,10 @@ dialog[open] {
 .close-dialog-form {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
+
+  & button {
+    place-self: flex-start;
+  }
 }
 
 .modal-dialog-content {

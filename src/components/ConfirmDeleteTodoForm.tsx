@@ -12,7 +12,7 @@ export function ConfirmDeleteTodoForm(
     <form action="/api/todos/ui" method="POST" className="close-dialog-form" role="none">
       <input type="hidden" name="state" value="CLOSE_CONFIRM_DELETE_TODO_DIALOG" />
       <input type="hidden" name="index" value={props.referrer.index} />
-      <button type="submit">Cancel</button>
+      <button type="submit" aria-label="Close dialog">X</button>
     </form>
     <div className="modal-dialog-content" role="none">
       <form action="/api/todos" method="POST">
