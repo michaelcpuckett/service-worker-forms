@@ -117,7 +117,7 @@ input:not([type="checkbox"]):not([type="radio"]) {
 .table-view {
   width: 100%;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) repeat(var(--num-properties, 0), minmax(0, 1fr)) auto;
   
   & thead,tbody {
     display: grid;

@@ -1,7 +1,7 @@
 import { renderToString } from "react-dom/server";
 import { TodosPage } from "./pages/TodosPage";
 import { SettingsPage } from "./pages/SettingsPage";
-import { Todo, Referrer, Settings } from "./types";
+import { Todo, Referrer, Settings, Property } from "./types";
 import { IDBPDatabase, wrap } from 'idb';
 
 const URLS_TO_CACHE = [
@@ -10,6 +10,18 @@ const URLS_TO_CACHE = [
   '/interactivity.js',
   '/manifest.json',
 ];
+
+function getTypeFromString(type: string) {
+  switch (type) {
+    case 'Number':
+      return Number;
+    case 'Boolean':
+      return Boolean;
+    case 'String':
+    default:
+      return String;
+  }
+}
 
 self.addEventListener('install', function (event: Event) {
   if (!(event instanceof ExtendableEvent)) {
@@ -86,6 +98,44 @@ self.addEventListener("fetch", function (event: Event) {
     const {pathname} = new URL(event.request.url);
 
     switch (pathname) {
+      case '/api/properties': {
+        switch (formData.method) {
+          case 'POST': {
+            const db = await getDb();
+
+            await addPropertyToIndexedDB({
+              id: Date.now(),
+              type: formData.type,
+              name: formData.name,
+              index: Number(formData.index),
+            }, db);
+
+            return new Response(null, {
+              headers: {
+                "Location": event.request.referrer,
+              },
+              status: 303,
+            });
+          }
+          case 'PUT': {
+            const db = await getDb();
+
+            await editPropertyInIndexedDB({
+              id: Number(formData.id),
+              type: formData.type,
+              name: formData.name,
+              index: Number(formData.index),
+            }, db);
+
+            return new Response(null, {
+              headers: {
+                "Location": event.request.referrer,
+              },
+              status: 303,
+            });
+          }
+        }
+      }
       case '/api/search': {
         switch (formData.method) {
           case 'POST': {
@@ -121,13 +171,31 @@ self.addEventListener("fetch", function (event: Event) {
           case 'POST': {
             const db = await getDb();
             const id = Date.now();
-            const todo: Todo = {
+            const todo = {
               id,
-              title: formData.title || 'No title',
+              title: formData.title || '',
               completed: false,
             };
 
-            await saveTodoToIndexedDB(todo, db);
+            const properties = await getPropertiesFromIndexedDb(db);
+
+            for (const property of properties) {
+              const value = formData[property.id];
+
+              if (property.type === String) {
+                todo[property.id] = value || '';
+              }
+
+              if (property.type === Number) {
+                todo[property.id] = Number(value) || 0;
+              }
+
+              if (property.type === Boolean) {
+                todo[property.id] = Boolean(value);
+              }
+            }
+            
+            await saveTodoToIndexedDB(todo as Todo, db);
 
             const url = new URL(event.request.referrer);
             url.searchParams.set('state', 'ADD_TODO');
@@ -166,13 +234,31 @@ self.addEventListener("fetch", function (event: Event) {
               });
             }
             const prev = todos[index];
-            const todo: Todo = {
+            const todo = {
               id,
-              title: formData.title || 'No title',
+              title: formData.title || '',
               completed: formData.completed === 'on',
             };
 
-            await editTodoInIndexedDb(todo, id, db);
+            const properties = await getPropertiesFromIndexedDb(db);
+
+            for (const property of properties) {
+              const value = formData[property.id];
+
+              if (property.type === String) {
+                todo[property.id] = value || '';
+              }
+
+              if (property.type === Number) {
+                todo[property.id] = Number(value) || 0;
+              }
+
+              if (property.type === Boolean) {
+                todo[property.id] = Boolean(value);
+              }
+            }
+
+            await editTodoInIndexedDb(todo as Todo, id, db);
 
             const url = new URL(event.request.referrer);
             url.searchParams.set('state', prev.completed !== todo.completed ? 'EDIT_TODO_COMPLETED' : 'EDIT_TODO');
@@ -244,7 +330,9 @@ self.addEventListener("fetch", function (event: Event) {
 async function renderTodosPage(db: IDBPDatabase<unknown>, referrer: Referrer) {
   const todos = await getTodosFromIndexedDb(db);
   const settings = await getSettingsFromIndexedDb(db);
-  return renderToString(TodosPage({todos, referrer, settings}));
+  const properties = await getPropertiesFromIndexedDb(db);
+
+  return renderToString(TodosPage({todos, referrer, settings, properties}));
 }
 
 async function renderSettingsPage(db: IDBPDatabase<unknown>) {
@@ -257,6 +345,22 @@ async function getSettingsFromIndexedDb(db: IDBPDatabase<unknown>) {
   const store = tx.objectStore('settings');
   const theme = await store.get('theme');
   return { theme };
+}
+
+async function getPropertiesFromIndexedDb(db: IDBPDatabase<unknown>): Promise<Property[]> {
+  const tx = db.transaction('properties', 'readwrite');
+  const store = tx.objectStore('properties');
+  const properties = await store.getAll();
+
+  if (properties.length) {
+    for (const property of properties) {
+      property.type = getTypeFromString(property.type);
+    }
+
+    return properties;
+  }
+
+  return [];
 }
 
 async function saveSettingsToIndexedDb(settings: Settings, db: IDBPDatabase<unknown>) {
@@ -294,6 +398,27 @@ async function deleteTodoInIndexedDb(id: number, db: IDBPDatabase<unknown>) {
   await tx.done;
 }
 
+type PropertyWithStringType = {
+  id: Property['id']
+  type: 'String' | 'Number' | 'Boolean',
+  name: Property['name'],
+  index: Property['index'],
+};
+
+async function addPropertyToIndexedDB(property: PropertyWithStringType, db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('properties', 'readwrite');
+  const store = tx.objectStore('properties');
+  await store.add(property, property.id);
+  await tx.done;
+}
+
+async function editPropertyInIndexedDB(property: PropertyWithStringType, db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('properties', 'readwrite');
+  const store = tx.objectStore('properties');
+  await store.put(property, property.id);
+  await tx.done;
+}
+
 async function getDb(): Promise<IDBPDatabase<unknown>> {
   return await new Promise((resolve) => {
     const openRequest = self.indexedDB.open('todos', 2);
@@ -305,6 +430,7 @@ async function getDb(): Promise<IDBPDatabase<unknown>> {
     openRequest.addEventListener('upgradeneeded', () => {
       openRequest.result.createObjectStore('todos');
       openRequest.result.createObjectStore('settings');
+      openRequest.result.createObjectStore('properties');
     });
 
     openRequest.addEventListener('error', (event) => {

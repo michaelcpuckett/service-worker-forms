@@ -1,5 +1,5 @@
 import React from "react";
-import { Referrer, Settings, Todo } from '../types';
+import { Referrer, Settings, Todo, Property } from '../types';
 import {TodosTableView} from '../components/TodosTableView';
 import {NewTodoForm} from '../forms/NewTodoForm';
 import { PageShell } from './PageShell';
@@ -8,7 +8,7 @@ import { ConfirmDeleteModalDialog } from '../dialogs/ConfirmDeleteModalDialog';
 import {EditPropertiesModalDialog} from '../dialogs/EditPropertiesModalDialog';
 import {TriggerPropertiesEditForm} from '../forms/TriggerPropertiesEditForm';
 
-export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; referrer: Referrer; settings: Settings; }>) {
+export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; referrer: Referrer; settings: Settings; properties: Property[]; }>) {
   return (
     <PageShell pageTitle="Todos" settings={props.settings}>
       <div className="container" inert={['CONFIRMING_DELETE_TODO', 'EDITING_TODO', 'EDITING_PROPERTIES'].includes(props.referrer.state) ? '' : null}>
@@ -20,8 +20,8 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
             <h1>Todos</h1>
             <TriggerPropertiesEditForm autofocus={props.referrer.state === 'CLOSE_EDIT_PROPERTIES_DIALOG'} />
           </header>
-          <NewTodoForm todos={props.todos || []} referrer={props.referrer} />
-          <TodosTableView todos={props.todos || []} referrer={props.referrer} />
+          <NewTodoForm todos={props.todos || []} referrer={props.referrer} properties={props.properties} />
+          <TodosTableView todos={props.todos || []} referrer={props.referrer} properties={props.properties} />
         </main>
       </div>
       {props.referrer.state === 'EDITING_TODO' ? (
@@ -39,7 +39,7 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
         />
       ) : null}
       {props.referrer.state ==='EDITING_PROPERTIES' ? (
-        <EditPropertiesModalDialog />
+        <EditPropertiesModalDialog properties={props.properties} />
       ) : null}
     </PageShell>
   );
