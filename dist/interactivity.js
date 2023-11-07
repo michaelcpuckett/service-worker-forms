@@ -18,10 +18,11 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 
-const STORAGE_KEY = 'scroll-position-y';
+const SCROLL_STORAGE_KEY = 'scroll-position-y';
+const FOCUS_STORAGE_KEY = 'focus-element-id';
 
 const handleScroll = () => {
-  window.sessionStorage.setItem(STORAGE_KEY, window.scrollY);
+  window.sessionStorage.setItem(SCROLL_STORAGE_KEY, window.scrollY);
 };
 
 window.addEventListener('scroll', handleScroll);
@@ -29,13 +30,7 @@ window.addEventListener('scroll', handleScroll);
 window.addEventListener('DOMContentLoaded', async () => {
   await new Promise(window.requestAnimationFrame);
 
-  const autofocusElement = window.document.querySelector('[data-auto-focus="true"]');
-
-  autofocusElement?.focus({
-    preventScroll: true,
-  });
-
-  const windowY = sessionStorage.getItem(STORAGE_KEY) || 0;
+  const windowY = sessionStorage.getItem(SCROLL_STORAGE_KEY) || 0;
   window.scrollTo(0, windowY);
 });
 
@@ -48,7 +43,27 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  Array.from(window.document.querySelectorAll('[data-auto-focus="true"]')).forEach((inputElement) => {
+  window.document.body.addEventListener('focusin', () => {
+    sessionStorage.setItem(FOCUS_STORAGE_KEY, document.activeElement.id);
+  });
+  
+  const autofocusElement = window.document.querySelector('[data-auto-focus="true"]');
+  const focusElementId = sessionStorage.getItem(FOCUS_STORAGE_KEY);
+  const focusElement = window.document.getElementById(focusElementId);
+
+  if (autofocusElement) {
+    autofocusElement.focus({
+      preventScroll: true,
+    });
+  } else {
+    if (focusElement) {
+      focusElement.focus({
+        preventScroll: true,
+      });
+    }
+  }
+
+  [focusElement, ...Array.from(window.document.querySelectorAll('[data-auto-focus="true"]'))].forEach((inputElement) => {
     if (!(inputElement instanceof HTMLInputElement)) {
       return;
     }
@@ -78,7 +93,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  Array.from(window.document.querySelectorAll('.contenteditable[value]')).forEach((inputElement) => {
+  Array.from(window.document.querySelectorAll('.contenteditable[value]:not([form="add-todo-form"])')).forEach((inputElement) => {
     inputElement.addEventListener('input', () => {
       if (inputElement.value !== (inputElement.getAttribute('value') || '')) {
         inputElement.classList.add('is-dirty');
@@ -86,9 +101,17 @@ window.addEventListener('DOMContentLoaded', () => {
         inputElement.classList.remove('is-dirty');
       }
     });
+
+    inputElement.addEventListener('blur', () => {
+      if (inputElement.classList.contains('is-dirty')) {
+        inputElement.form.dispatchEvent(new SubmitEvent('submit', {
+          cancelable: true,
+        }));
+      }
+    });
   });
 
-  const uniqueContenteditableForms = [...new Set(Array.from(window.document.querySelectorAll('.contenteditable')).map((inputElement) => inputElement.form).filter((form) => !!form))];
+  const uniqueContenteditableForms = [...new Set(Array.from(window.document.querySelectorAll('.contenteditable:not([form="add-todo-form"])')).map((inputElement) => inputElement.form).filter((form) => !!form))];
 
   for (const form of uniqueContenteditableForms) {
     form.addEventListener('submit', (event) => {

@@ -81,7 +81,16 @@ export function TodosTableView(
                   />
                 </td>
                 <td>
-                  <input form={`edit-todo-inline-form--${todo.id}`} autoComplete="off" aria-label="Title" type="text" className="contenteditable title" name="title" value={todo.title} />
+                  <input
+                    form={`edit-todo-inline-form--${todo.id}`}
+                    id={`edit-todo-inline-form-field--${todo.id}--title`}
+                    autoComplete="off"
+                    aria-label="Title"
+                    type="text"
+                    className="contenteditable title"
+                    name="title"
+                    value={todo.title}
+                  />
                   <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" viewBox="-2.5 0 19 19">
                     <use xmlnsXlink='http://www.w3.org/1999/xlink' xlinkHref='/icons.svg#floppy-disk'></use>
                   </svg>
@@ -94,7 +103,15 @@ export function TodosTableView(
                   
                   return (
                     <td>
-                      <input autoComplete="off" aria-label={property.name} form={`edit-todo-inline-form--${todo.id}`} type="text" name={`${property.id}`} className="contenteditable" value={value} />
+                      <input
+                        id={`edit-todo-inline-form-field--${todo.id}--${property.id}`}
+                        autoComplete="off"
+                        aria-label={property.name}
+                        form={`edit-todo-inline-form--${todo.id}`}
+                        type="text" name={`${property.id}`}
+                        className="contenteditable"
+                        value={value}
+                      />
                       <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" viewBox="-2.5 0 19 19">
                         <use xmlnsXlink='http://www.w3.org/1999/xlink' xlinkHref='/icons.svg#floppy-disk'></use>
                       </svg>
@@ -139,7 +156,7 @@ export function TodosTableView(
                 form="add-todo-form"
                 placeholder="Title"
                 className="contenteditable"
-                data-auto-focus={!props.referrer.state || props.referrer.state === 'ADD_TODO'}
+                data-auto-focus={props.referrer.state === 'ADD_TODO'}
                 value=""
               />
               <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="black" viewBox="-2.5 0 19 19">
@@ -167,7 +184,7 @@ export function TodosTableView(
               );
             })}
             <td>
-              <form action="/api/todos" method="POST" role="none" id="add-todo-form" data-auto-submit>
+              <form action="/api/todos" method="POST" role="none" id="add-todo-form">
                 <input type="hidden" name="method" value="POST" />
                 <button type="submit" className="button">
                   Add

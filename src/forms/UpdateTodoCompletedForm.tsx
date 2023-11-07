@@ -7,6 +7,7 @@ export function UpdateTodoCompletedForm(props: React.PropsWithChildren<{ todo: T
       <input type="hidden" name="method" value="PUT" />
       <input
         data-auto-focus={props.autofocus}
+        id={`edit-todo-inline-form-field--${props.todo.id}--completed`}
         name="completed"
         type="checkbox"
         checked={props.todo.completed}
