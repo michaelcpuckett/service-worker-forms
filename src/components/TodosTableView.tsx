@@ -51,13 +51,11 @@ export function TodosTableView(
               <th>
                 Title
               </th>
-              {
-                props.properties.map((property) => (
-                  <th>
-                    {property.name}
-                  </th>
-                ))
-              }
+              {props.properties.map((property) => (
+                <th>
+                  {property.name}
+                </th>
+              ))}
               <th>
                 Actions
               </th>
