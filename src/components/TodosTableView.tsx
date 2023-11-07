@@ -27,6 +27,8 @@ export function TodosTableView(
     }
   });
 
+  const gridColumnsCss = `auto minmax(0, 1fr) ${props.properties.length ? `repeat(${props.properties.length}, minmax(0, 1fr))` : ''} auto`;
+
   return (
     <section aria-label="Table View">
       {props.todos.length === 0 ? (
@@ -39,7 +41,7 @@ export function TodosTableView(
           <SearchTodosForm referrer={props.referrer} />
         </nav>
         <table className="table-view" style={{
-          '--num-properties': props.properties.length,
+          '--grid-columns': gridColumnsCss,
         }}>
           <thead>
             <tr>
@@ -76,6 +78,7 @@ export function TodosTableView(
                   <td>
                     <UpdateTodoCompletedForm
                       todo={todo}
+                      properties={props.properties}
                       autofocus={(['EDIT_TODO_COMPLETED'].includes(props.referrer.state) && index === (props.referrer.index ?? (length - 1)))}
                     />
                   </td>

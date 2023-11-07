@@ -28,7 +28,7 @@ return (
               type="text"
               name={`${property.id}`}
               placeholder={property.name}
-              value={`${props.todo[property.id]}`}
+              value={`${props.todo[property.id] || ''}`}
             />
           </label>
         );
