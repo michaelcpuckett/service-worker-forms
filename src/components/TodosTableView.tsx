@@ -81,19 +81,41 @@ export function TodosTableView(
                     />
                   </td>
                   <td>
-                    <span className="title">
-                      {todo.title}
-                    </span>
+                    <form method="POST" action="/api/todos">
+                      <input type="hidden" name="method" value="PUT" />
+                      <input type="hidden" name="id" value={todo.id} />
+                      {props.properties.map((property) => (
+                        <input type="hidden" name={`${property.id}`} value={`${todo[property.id] || ''}`} />
+                      ))}                     
+                      <input aria-label="Title" type="text" className="contenteditable" name="title" value={todo.title} />
+                    </form>
                   </td>
-                  {props.properties.map((property) => (
-                    <td>
-                      <span className="title">
-                        {(typeof todo[property.id] === 'boolean' && property.name !== 'completed') ? (todo[property.id] ? 'Yes' : 'No') : null}
-                        {typeof todo[property.id] === 'string' && `${todo[property.id]}`}
-                        {typeof todo[property.id] === 'number' && property.name !== 'id' && `${todo[property.id]}`}
-                      </span>
-                    </td>
-                  ))}
+                  {props.properties.map((property) => {
+                    const value = 
+                      ((typeof todo[property.id] === 'boolean' && property.name !== 'completed') ? (todo[property.id] ? 'Yes' : 'No') : '') ||
+                      (typeof todo[property.id] === 'string' && `${todo[property.id]}`) ||
+                      (typeof todo[property.id] === 'number' && property.name !== 'id' && `${todo[property.id]}`) || '';
+                    
+                    return (
+                      <td>
+                        <form method="POST" action="/api/todos">
+                          <input type="hidden" name="method" value="PUT" />
+                          <input type="hidden" name="id" value={todo.id} />
+                          <input type="hidden" name="title" value={todo.title} />
+                          {props.properties.map((p) => {
+                            if (p.id === property.id) {
+                              return;
+                            }
+
+                            return (
+                              <input type="hidden" name={`${p.id}`} value={`${todo[p.id] || ''}`} />
+                            );
+                          })}
+                          <input aria-label={property.name} type="text" name={`${property.id}`} className="contenteditable" value={value} />
+                        </form>
+                      </td>
+                    );
+                  })}
                   <td>
                     <TodoActionsMenu
                       todo={todo}

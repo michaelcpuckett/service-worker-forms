@@ -102,16 +102,33 @@ button {
   }
 }
 
-input:not([type="checkbox"]):not([type="radio"]) {
-  padding: 1rem;
+input:not([type="checkbox"]):not([type="radio"]):not(.contenteditable) {
   margin: 0;
   border: 1px solid;
+  padding: 1rem;
   box-shadow: none;
   border-radius: 0;
   font: inherit;
   background: Canvas;
   color: CanvasText;
   width: 100%;
+}
+
+.contenteditable {
+  margin: 0;
+  border: 1px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+  font: inherit;
+  color: inherit;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background: transparent;
+
+  &.is-dirty:not(:focus) {
+    border: 1px solid red;
+  }
 }
 
 .table-view {

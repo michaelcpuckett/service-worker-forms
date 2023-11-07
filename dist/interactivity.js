@@ -84,6 +84,17 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  Array.from(window.document.querySelectorAll('.contenteditable[value]')).forEach((inputElement) => {
+    console.log(inputElement, '...');
+    inputElement.addEventListener('input', () => {
+      if (inputElement.value !== (inputElement.getAttribute('value') || '')) {
+        inputElement.classList.add('is-dirty');
+      } else {
+        inputElement.classList.remove('is-dirty');
+      }
+    });
+  });
+
   Array.from(window.document.querySelectorAll('[role="menu"]')).forEach((menuElement) => {
     const detailsElement = menuElement.closest('details');
     const itemElements = Array.from(menuElement.querySelectorAll('[role="menuitem"]'));
