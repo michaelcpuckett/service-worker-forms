@@ -2,11 +2,9 @@ import React from 'react';
 import {Property, Todo} from '../types';
 
 export function EditTodoForm(props: React.PropsWithoutRef<{ todo: Todo; index: number; properties: Property[]; }>) {
-return (
-  <form action="/api/todos" method="POST" role="none">
+  return (
+    <form action={`/api/todos/${props.todo.id}`} method="POST" role="none">
       <input type="hidden" name="method" value="PUT" />
-      <input type="hidden" name="id" value={props.todo.id} />
-      <input type="hidden" name="completed" value={props.todo.completed ? 'on' : 'off'} />
       <label>
         <span>Title</span>
         <input

@@ -40,12 +40,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-  Array.from(window.document.querySelectorAll('form[data-auto-submit] :is([type="checkbox"], [type="radio"])')).forEach((inputElement) => {
-    inputElement.addEventListener('input', () => {
-      inputElement.form.submit();
-    });
-  });
-  
   Array.from(window.document.querySelectorAll('[type="search"]')).forEach((inputElement) => {
     inputElement.addEventListener('input', () => {
       if (inputElement.value === '') {
@@ -96,8 +90,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const uniqueContenteditableForms = [...new Set(Array.from(window.document.querySelectorAll('.contenteditable')).map((inputElement) => inputElement.form).filter((form) => !!form))];
 
-  console.log(uniqueContenteditableForms);
-
   for (const form of uniqueContenteditableForms) {
     form.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -116,13 +108,36 @@ window.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      console.log(promises.length);
-
       Promise.all(promises).then(() => {
         window.location.reload();
       });
     });
   }
+  
+  Array.from(window.document.querySelectorAll('form[data-auto-submit] :is([type="checkbox"], [type="radio"])')).forEach((inputElement) => {
+    inputElement.addEventListener('input', () => {
+      console.log(uniqueContenteditableForms);
+
+      const promises = uniqueContenteditableForms.map((contenteditableForm) => {
+        const hasDirtyFormElements = Array.from(contenteditableForm.elements).find((formElement) => {
+          return formElement.matches('.contenteditable.is-dirty');
+        });
+
+        if (!hasDirtyFormElements) {
+          return;
+        }
+
+        return fetch(contenteditableForm.getAttribute('action'), {
+          method: contenteditableForm.getAttribute('method'),
+          body: new FormData(contenteditableForm),
+        });
+      });
+
+      Promise.all(promises).then(() => {
+        inputElement.form.submit();
+      });
+    });
+  });
 
   Array.from(window.document.querySelectorAll('[role="menu"]')).forEach((menuElement) => {
     const detailsElement = menuElement.closest('details');

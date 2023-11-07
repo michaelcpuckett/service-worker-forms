@@ -15,9 +15,8 @@ export function ConfirmDeleteModalDialog(props: React.PropsWithChildren<{ todo: 
       <blockquote>
         <strong>{props.todo.title}</strong>
       </blockquote>
-      <form action="/api/todos" method="POST" role="none">
+      <form action={`/api/todos/${props.todo.id}`} method="POST" role="none">
         <input type="hidden" name="method" value="DELETE" />
-        <input type="hidden" name="id" value={props.todo.id} />
         <button className="button" type="submit" data-auto-focus="true">
           Delete
         </button>

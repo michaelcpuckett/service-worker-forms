@@ -3,6 +3,7 @@ import { TodosPage } from "./pages/TodosPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { Todo, Referrer, Settings, Property } from "./types";
 import { IDBPDatabase, wrap } from 'idb';
+import { pathToRegexp, match, parse, compile }from "path-to-regexp";
 
 const URLS_TO_CACHE = [
   '/style.css',
@@ -41,6 +42,8 @@ self.addEventListener("fetch", function (event: Event) {
   if (!(event instanceof FetchEvent)) {
     return;
   }
+
+  const url = new URL(event.request.url);
 
   if (event.request.method === 'GET') {
     return event.respondWith((async () => {
@@ -96,6 +99,125 @@ self.addEventListener("fetch", function (event: Event) {
     const rawFormData = await event.request.formData();
     const formData = Object.fromEntries(rawFormData.entries());
     const {pathname} = new URL(event.request.url);
+
+    const matchesTodo = pathToRegexp("/api/todos/:id").exec(pathname);
+    const matchesTodoCompleted = pathToRegexp("/api/todos/:id/completed").exec(pathname);
+
+    if (matchesTodo) {
+      switch (formData.method) {
+        case 'PUT': {
+          const db = await getDb();
+          const id = Number(matchesTodo[1]);
+          const todos = await getTodosFromIndexedDb(db);
+          const index = todos.findIndex(todo => todo.id === id);
+
+          if ('index' in formData) {
+            const newIndex = Number(formData.index);
+            const prev = {...todos[newIndex], id: todos[index].id};
+            const todo = {...todos[index], id: todos[newIndex].id};
+
+            await editTodoInIndexedDb(todo, todo.id, db);
+            await editTodoInIndexedDb(prev, prev.id, db);
+
+            const url = new URL(event.request.referrer);
+            url.searchParams.set('state', `REORDER_TODO_${newIndex < index ? 'UP' : 'DOWN'}`);
+            url.searchParams.set('index', `${newIndex}`);
+
+            return new Response(null, {
+              headers: {
+                "Location": url.href,
+              },
+              status: 303,
+            });
+          }
+
+          const prev = todos[index] || {};
+
+          const todo = {
+            id,
+            title: ('title' in formData ? formData.title : prev.title) || '',
+            completed: prev.completed,
+          };
+
+          const properties = await getPropertiesFromIndexedDb(db);
+
+          for (const property of properties) {
+            const value = formData[property.id] || prev[property.id];
+
+            if (property.type === String) {
+              todo[property.id] = value || '';
+            }
+
+            if (property.type === Number) {
+              todo[property.id] = Number(value) || 0;
+            }
+
+            if (property.type === Boolean) {
+              todo[property.id] = Boolean(value);
+            }
+          }
+
+          await editTodoInIndexedDb(todo as Todo, id, db);
+
+          const url = new URL(event.request.referrer);
+          url.searchParams.set('state', 'EDIT_TODO');
+          url.searchParams.set('index', `${index}`);
+
+          return new Response(null, {
+            headers: {
+              "Location": url.href,
+            },
+            status: 303,
+          });
+        }
+
+        case 'DELETE': {
+          const db = await getDb();
+          const id = Number(matchesTodo[1]);
+          const todos = await getTodosFromIndexedDb(db);
+          const index = todos.findIndex(todo => todo.id === id);
+
+          await deleteTodoInIndexedDb(id, db);
+
+          const url = new URL(event.request.referrer);
+          url.searchParams.set('state', 'DELETE_TODO');
+          url.searchParams.set('index', `${index}`);
+
+          return new Response(null, {
+            headers: {
+              "Location": url.href,
+            },
+            status: 303,
+          });
+        }
+      }
+    }
+
+    if (matchesTodoCompleted) {
+      switch (formData.method) {
+        case 'PUT': {
+          const db = await getDb();
+          const id = Number(matchesTodoCompleted[1]);
+          const todos = await getTodosFromIndexedDb(db);
+          const index = todos.findIndex(todo => todo.id === id);
+          const prev = todos[index] || {};
+          const todo = {...prev, completed: formData.completed === 'on'};
+          
+          await editTodoInIndexedDb(todo, todo.id, db);
+          
+          const url = new URL(event.request.referrer);
+          url.searchParams.set('state', 'EDIT_TODO_COMPLETED');
+          url.searchParams.set('index', `${index}`);
+
+          return new Response(null, {
+            headers: {
+              "Location": url.href,
+            },
+            status: 303,
+          });
+        }
+      }
+    }
 
     switch (pathname) {
       case '/api/properties': {
@@ -199,90 +321,6 @@ self.addEventListener("fetch", function (event: Event) {
 
             const url = new URL(event.request.referrer);
             url.searchParams.set('state', 'ADD_TODO');
-
-            return new Response(null, {
-              headers: {
-                "Location": url.href,
-              },
-              status: 303,
-            });
-          }
-
-          case 'PUT': {
-            const db = await getDb();
-            const id = Number(formData.id);
-            const todos = await getTodosFromIndexedDb(db);
-            const index = todos.findIndex(todo => todo.id === id);
-
-            if ('index' in formData) {
-              const newIndex = Number(formData.index);
-              const prev = {...todos[newIndex], id: todos[index].id};
-              const todo = {...todos[index], id: todos[newIndex].id};
-
-              await editTodoInIndexedDb(todo, todo.id, db);
-              await editTodoInIndexedDb(prev, prev.id, db);
-
-              const url = new URL(event.request.referrer);
-              url.searchParams.set('state', `REORDER_TODO_${newIndex < index ? 'UP' : 'DOWN'}`);
-              url.searchParams.set('index', `${newIndex}`);
-
-              return new Response(null, {
-                headers: {
-                  "Location": url.href,
-                },
-                status: 303,
-              });
-            }
-            const prev = todos[index];
-            const todo = {
-              id,
-              title: formData.title || '',
-              completed: formData.completed === 'on',
-            };
-
-            const properties = await getPropertiesFromIndexedDb(db);
-
-            for (const property of properties) {
-              const value = formData[property.id];
-
-              if (property.type === String) {
-                todo[property.id] = value || '';
-              }
-
-              if (property.type === Number) {
-                todo[property.id] = Number(value) || 0;
-              }
-
-              if (property.type === Boolean) {
-                todo[property.id] = Boolean(value);
-              }
-            }
-
-            await editTodoInIndexedDb(todo as Todo, id, db);
-
-            const url = new URL(event.request.referrer);
-            url.searchParams.set('state', prev.completed !== todo.completed ? 'EDIT_TODO_COMPLETED' : 'EDIT_TODO');
-            url.searchParams.set('index', `${index}`);
-
-            return new Response(null, {
-              headers: {
-                "Location": url.href,
-              },
-              status: 303,
-            });
-          }
-
-          case 'DELETE': {
-            const db = await getDb();
-            const id = Number(formData.id);
-            const todos = await getTodosFromIndexedDb(db);
-            const index = todos.findIndex(todo => todo.id === id);
-
-            await deleteTodoInIndexedDb(id, db);
-
-            const url = new URL(event.request.referrer);
-            url.searchParams.set('state', 'DELETE_TODO');
-            url.searchParams.set('index', `${index}`);
 
             return new Response(null, {
               headers: {
