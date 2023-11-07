@@ -181,7 +181,7 @@ td:has(.contenteditable.is-dirty) svg {
       flex: 1;
     }
 
-    & span {
+    & .title {
       [data-completed] & {
         text-decoration: line-through;
       }

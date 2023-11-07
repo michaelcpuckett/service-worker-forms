@@ -81,16 +81,10 @@ export function TodosTableView(
                   />
                 </td>
                 <td>
-                  <form method="POST" action={`/api/todos/${todo.id}`} id={`edit-todo-inline-form--${todo.id}`}>
-                    <input type="hidden" name="method" value="PUT" />
-                    <input autoComplete="off" aria-label="Title" type="text" className="contenteditable" name="title" value={todo.title} />
-                    <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" viewBox="-2.5 0 19 19">
-                      <use xmlnsXlink='http://www.w3.org/1999/xlink' xlinkHref='/icons.svg#floppy-disk'></use>
-                    </svg>
-                    <button type="submit" hidden>
-                      Update
-                    </button>
-                  </form>
+                  <input form={`edit-todo-inline-form--${todo.id}`} autoComplete="off" aria-label="Title" type="text" className="contenteditable title" name="title" value={todo.title} />
+                  <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" viewBox="-2.5 0 19 19">
+                    <use xmlnsXlink='http://www.w3.org/1999/xlink' xlinkHref='/icons.svg#floppy-disk'></use>
+                  </svg>
                 </td>
                 {props.properties.map((property) => {
                   const value = 
@@ -108,6 +102,12 @@ export function TodosTableView(
                   );
                 })}
                 <td>
+                  <form method="POST" action={`/api/todos/${todo.id}`} id={`edit-todo-inline-form--${todo.id}`}>
+                    <input type="hidden" name="method" value="PUT" />
+                    <button type="submit" hidden>
+                      Update
+                    </button>
+                  </form>
                   <TodoActionsMenu
                     todo={todo}
                     todos={props.todos}
@@ -121,25 +121,27 @@ export function TodosTableView(
             );
           })}
           <tr>
-            <td></td>
             <td>
-              <form action="/api/todos" method="POST" role="none" id="add-todo-form">
-                <input type="hidden" name="method" value="POST" />
-                <input
-                  aria-label="Title"
-                  autoComplete="off"
-                  required
-                  type="text"
-                  name="title"
-                  placeholder="Title"
-                  className="contenteditable"
-                  data-auto-focus={!props.referrer.state || props.referrer.state === 'ADD_TODO'}
-                  value=""
-                />
-                <button type="submit" hidden>
-                  Add
-                </button>
-              </form>
+              <input
+                name="completed"
+                type="checkbox"
+                aria-label="Completed"
+                form="add-todo-form"
+              />
+            </td>
+            <td>
+              <input
+                aria-label="Title"
+                autoComplete="off"
+                required
+                type="text"
+                name="title"
+                form="add-todo-form"
+                placeholder="Title"
+                className="contenteditable"
+                data-auto-focus={!props.referrer.state || props.referrer.state === 'ADD_TODO'}
+                value=""
+              />
               <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="black" viewBox="-2.5 0 19 19">
                 <use xmlnsXlink='http://www.w3.org/1999/xlink' xlinkHref='/icons.svg#floppy-disk'></use>
               </svg>
@@ -164,7 +166,14 @@ export function TodosTableView(
                 </td>
               );
             })}
-            <td></td>
+            <td>
+              <form action="/api/todos" method="POST" role="none" id="add-todo-form" data-auto-submit>
+                <input type="hidden" name="method" value="POST" />
+                <button type="submit" className="button">
+                  Add
+                </button>
+              </form>
+            </td>
           </tr>
         </tbody>
       </table>

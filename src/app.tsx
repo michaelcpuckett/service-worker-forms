@@ -296,7 +296,7 @@ self.addEventListener("fetch", function (event: Event) {
             const todo = {
               id,
               title: formData.title || '',
-              completed: false,
+              completed: formData.completed === 'on',
             };
 
             const properties = await getPropertiesFromIndexedDb(db);

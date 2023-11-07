@@ -102,6 +102,10 @@ window.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
+        if (!contenteditableForm.checkValidity()) {
+          return;
+        }
+
         return fetch(contenteditableForm.getAttribute('action'), {
           method: contenteditableForm.getAttribute('method'),
           body: new FormData(contenteditableForm),
@@ -114,16 +118,24 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  Array.from(window.document.querySelectorAll('form[data-auto-submit] :is([type="checkbox"], [type="radio"])')).forEach((inputElement) => {
-    inputElement.addEventListener('input', () => {
-      console.log(uniqueContenteditableForms);
+  Array.from(window.document.querySelectorAll('form[data-auto-submit]')).forEach((formElement) => {
+    const inputElement = Array.from(formElement.elements).find((formElement) => formElement.matches('input[type="checkbox"]'));
 
+    inputElement.addEventListener('input', () => {
       const promises = uniqueContenteditableForms.map((contenteditableForm) => {
         const hasDirtyFormElements = Array.from(contenteditableForm.elements).find((formElement) => {
           return formElement.matches('.contenteditable.is-dirty');
         });
 
         if (!hasDirtyFormElements) {
+          return;
+        }
+
+        if (contenteditableForm === formElement) {
+          return;
+        }
+
+        if (!contenteditableForm.checkValidity()) {
           return;
         }
 
@@ -134,7 +146,9 @@ window.addEventListener('DOMContentLoaded', () => {
       });
 
       Promise.all(promises).then(() => {
-        inputElement.form.submit();
+        if (formElement.checkValidity()) {
+          formElement.submit();
+        }
       });
     });
   });
