@@ -1,7 +1,7 @@
 import React from "react";
 import { Referrer, Todo, Property } from "../types";
 
-export function NewTodoForm(props: React.PropsWithChildren<{ referrer: Referrer; todos: Todo[]; properties: Property[]; }>) {
+export function AddTodoForm(props: React.PropsWithChildren<{ referrer: Referrer; todos: Todo[]; properties: Property[]; }>) {
   return (
     <form action="/api/todos" method="POST" className="inline-form" role="none">
       <div role="group" aria-label="New Todo">

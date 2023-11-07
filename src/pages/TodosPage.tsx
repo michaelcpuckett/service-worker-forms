@@ -1,7 +1,7 @@
 import React from "react";
 import { Referrer, Settings, Todo, Property } from '../types';
 import {TodosTableView} from '../components/TodosTableView';
-import {NewTodoForm} from '../forms/NewTodoForm';
+import {AddTodoForm} from '../forms/AddTodoForm';
 import { PageShell } from './PageShell';
 import { EditTodoModalDialog } from '../dialogs/EditTodoModalDialog';
 import { ConfirmDeleteModalDialog } from '../dialogs/ConfirmDeleteModalDialog';
@@ -20,7 +20,7 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
             <h1>Todos</h1>
             <TriggerPropertiesEditForm autofocus={props.referrer.state === 'CLOSE_EDIT_PROPERTIES_DIALOG'} />
           </header>
-          <NewTodoForm todos={props.todos || []} referrer={props.referrer} properties={props.properties} />
+          <AddTodoForm todos={props.todos || []} referrer={props.referrer} properties={props.properties} />
           <TodosTableView todos={props.todos || []} referrer={props.referrer} properties={props.properties} />
         </main>
       </div>
@@ -28,6 +28,7 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
         <EditTodoModalDialog
           index={props.referrer.index || 0}
           todo={(props.todos || [])[Number(props.referrer.index)]}
+          properties={props.properties}
         />
       ) : null}
       {props.referrer.state === 'CONFIRMING_DELETE_TODO' ? (
