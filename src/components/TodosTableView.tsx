@@ -85,7 +85,7 @@ export function TodosTableView(
                     <input type="hidden" name="method" value="PUT" />
                     <input type="hidden" name="id" value={todo.id} />
                     <input autoComplete="off" aria-label="Title" type="text" className="contenteditable" name="title" value={todo.title} />
-                    <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="black" viewBox="-2.5 0 19 19">
+                    <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" viewBox="-2.5 0 19 19">
                       <use xmlnsXlink='http://www.w3.org/1999/xlink' xlinkHref='/icons.svg#floppy-disk'></use>
                     </svg>
                     <button type="submit" hidden>
@@ -102,7 +102,7 @@ export function TodosTableView(
                   return (
                     <td>
                       <input autoComplete="off" aria-label={property.name} form={`edit-todo-inline-form--${todo.id}`} type="text" name={`${property.id}`} className="contenteditable" value={value} />
-                      <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="black" viewBox="-2.5 0 19 19">
+                      <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" viewBox="-2.5 0 19 19">
                         <use xmlnsXlink='http://www.w3.org/1999/xlink' xlinkHref='/icons.svg#floppy-disk'></use>
                       </svg>
                     </td>

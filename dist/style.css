@@ -115,6 +115,7 @@ input:not([type="checkbox"]):not([type="radio"]):not(.contenteditable) {
 }
 
 .contenteditable {
+  padding: .5rem 0;
   margin: 0;
   border: 1px solid transparent;
   border-radius: 0;
