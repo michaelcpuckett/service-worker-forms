@@ -13,7 +13,7 @@ export function UpdateTodoCompletedForm(props: React.PropsWithChildren<{ todo: T
             key={property.id}
             type="hidden"
             name={`${property.id}`}
-            value={`${props.todo[property.id]}`}
+            value={`${props.todo[property.id] || ''}`}
           />
         );
       })}
