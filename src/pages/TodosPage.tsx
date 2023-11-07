@@ -5,7 +5,7 @@ import {AddTodoForm} from '../forms/AddTodoForm';
 import { PageShell } from './PageShell';
 import { EditTodoModalDialog } from '../dialogs/EditTodoModalDialog';
 import { ConfirmDeleteModalDialog } from '../dialogs/ConfirmDeleteModalDialog';
-import {EditPropertiesModalDialog} from '../dialogs/EditPropertiesModalDialog';
+import {PropertiesModalDialog} from '../dialogs/PropertiesModalDialog';
 import {TriggerPropertiesEditForm} from '../forms/TriggerPropertiesEditForm';
 
 export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; referrer: Referrer; settings: Settings; properties: Property[]; }>) {
@@ -40,7 +40,7 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
         />
       ) : null}
       {props.referrer.state ==='EDITING_PROPERTIES' ? (
-        <EditPropertiesModalDialog properties={props.properties} />
+        <PropertiesModalDialog properties={props.properties} />
       ) : null}
     </PageShell>
   );
