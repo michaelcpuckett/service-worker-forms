@@ -1,9 +1,9 @@
 import React from 'react';
 import { Todo, Referrer } from '../types';
-import { ReorderTodoUpForm } from '../components/ReorderTodoUpForm';
-import { ReorderTodoDownForm } from '../components/ReorderTodoDownForm';
-import {TriggerTodoEditForm} from '../components/TriggerTodoEditForm';
-import {DeleteTodoForm} from '../components/DeleteTodoForm';
+import { ReorderTodoUpForm } from '../forms/ReorderTodoUpForm';
+import { ReorderTodoDownForm } from '../forms/ReorderTodoDownForm';
+import {TriggerTodoEditForm} from '../forms/TriggerTodoEditForm';
+import {DeleteTodoForm} from '../forms/DeleteTodoForm';
 
 export function TodoActionsMenu(props: React.PropsWithChildren<{ todo: Todo; todos: Todo[]; filteredTodos: Todo[]; filteredIndex: number; index: number; referrer: Referrer; }>) {
   return (

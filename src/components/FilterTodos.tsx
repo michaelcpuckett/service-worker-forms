@@ -1,5 +1,5 @@
 import React from 'react';
-import {Referrer} from '../types';
+import {Todo, Referrer} from '../types';
 
 export function FilterTodos(props: React.PropsWithoutRef<{ todos: Todo[]; referrer: Referrer }>) {
   const allTodosUrl = new URL(props.referrer.url);

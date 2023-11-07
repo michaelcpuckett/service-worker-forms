@@ -1,7 +1,7 @@
 import React from "react";
 import { Todo, Referrer } from '../types';
-import { UpdateTodoCompletedForm } from './UpdateTodoCompletedForm';
-import {SearchTodosForm} from './SearchTodosForm';
+import { UpdateTodoCompletedForm } from '../forms/UpdateTodoCompletedForm';
+import {SearchTodosForm} from '../forms/SearchTodosForm';
 import {FilterTodos} from './FilterTodos';
 import {TodoActionsMenu} from '../menus/TodoActionsMenu';
 
