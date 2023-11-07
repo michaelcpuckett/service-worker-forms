@@ -6,6 +6,7 @@ import { IDBPDatabase, wrap } from 'idb';
 
 const URLS_TO_CACHE = [
   '/style.css',
+  '/icons.svg',
   '/interactivity.js',
   '/manifest.json',
 ];

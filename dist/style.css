@@ -340,8 +340,9 @@ details[open] summary:before {
 table details:has([role="menu"]) summary {
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid black;
-  background: white;
+  color: CanvasText;
+  border: 2px solid;
+  background: Canvas;
   padding: 8px 10px 6px 10px;
 }
 

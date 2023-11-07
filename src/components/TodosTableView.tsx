@@ -3,7 +3,7 @@ import { Todo, Referrer } from '../types';
 import { UpdateTodoCompletedForm } from './UpdateTodoCompletedForm';
 import {SearchTodosForm} from './SearchTodosForm';
 import {FilterTodos} from './FilterTodos';
-import {TodoActionsMenu} from './TodoActionsMenu';
+import {TodoActionsMenu} from '../menus/TodoActionsMenu';
 
 export function TodosTableView(
   props: React.PropsWithoutRef<{ todos: Todo[], referrer: Referrer }>
