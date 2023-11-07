@@ -125,10 +125,20 @@ input:not([type="checkbox"]):not([type="radio"]):not(.contenteditable) {
   height: 100%;
   display: flex;
   background: transparent;
+  margin-right: 2rem;
+}
 
-  &.is-dirty:not(:focus) {
-    border: 1px solid red;
-  }
+td:has(.contenteditable) {
+  position: relative;
+}
+
+td:has(.contenteditable) svg {
+  display: none;
+}
+
+td:has(.contenteditable.is-dirty) svg {
+  display: flex;
+  fill: red;
 }
 
 .table-view {

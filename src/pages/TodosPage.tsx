@@ -1,7 +1,6 @@
 import React from "react";
 import { Referrer, Settings, Todo, Property } from '../types';
 import {TodosTableView} from '../components/TodosTableView';
-import {AddTodoForm} from '../forms/AddTodoForm';
 import { PageShell } from './PageShell';
 import { EditTodoModalDialog } from '../dialogs/EditTodoModalDialog';
 import { ConfirmDeleteModalDialog } from '../dialogs/ConfirmDeleteModalDialog';
@@ -17,10 +16,9 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
         </nav>
         <main>
           <header>
-            <h1>Todos</h1>
+            <h1>New Todo List</h1>
             <TriggerPropertiesEditForm autofocus={props.referrer.state === 'CLOSE_EDIT_PROPERTIES_DIALOG'} />
           </header>
-          <AddTodoForm todos={props.todos || []} referrer={props.referrer} properties={props.properties} />
           <TodosTableView todos={props.todos || []} referrer={props.referrer} properties={props.properties} />
         </main>
       </div>

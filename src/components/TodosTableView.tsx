@@ -33,105 +33,142 @@ export function TodosTableView(
     <section aria-label="Table View">
       {props.todos.length === 0 ? (
         <p>
-          No todos yet. Add one above.
+          No todos yet. Add one below.
         </p>
-      ) : <>
-        <nav aria-label="Actions">
-          <FilterTodos todos={props.todos} referrer={props.referrer} />
-          <SearchTodosForm referrer={props.referrer} />
-        </nav>
-        <table className="table-view" style={{
-          '--grid-columns': gridColumnsCss,
-        }}>
-          <thead>
-            <tr>
+      ) : null}
+      <nav aria-label="Actions">
+        <FilterTodos todos={props.todos} referrer={props.referrer} />
+        <SearchTodosForm referrer={props.referrer} />
+      </nav>
+      <table className="table-view" style={{
+        '--grid-columns': gridColumnsCss,
+      }}>
+        <thead>
+          <tr>
+            <th>
+              Done
+            </th>
+            <th>
+              Title
+            </th>
+            {props.properties.map((property) => (
               <th>
-                Done
+                {property.name}
               </th>
-              <th>
-                Title
-              </th>
-              {props.properties.map((property) => (
-                <th>
-                  {property.name}
-                </th>
-              ))}
-              <th>
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {props.todos.map((todo, index, { length }) => {
-              const filteredIndex = filteredTodos.findIndex((t) => t.id === todo.id);
+            ))}
+            <th>
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {props.todos.map((todo, index, { length }) => {
+            const filteredIndex = filteredTodos.findIndex((t) => t.id === todo.id);
 
-              if (filteredIndex === -1) {
-                return null;
-              }
+            if (filteredIndex === -1) {
+              return null;
+            }
 
+            return (
+              <tr
+                aria-label={todo.title}
+                data-completed={todo.completed ? '' : undefined}>
+                <td>
+                  <UpdateTodoCompletedForm
+                    todo={todo}
+                    properties={props.properties}
+                    autofocus={(['EDIT_TODO_COMPLETED'].includes(props.referrer.state) && index === (props.referrer.index ?? (length - 1)))}
+                  />
+                </td>
+                <td>
+                  <form method="POST" action="/api/todos" id={`edit-todo-inline-form--${todo.id}`}>
+                    <input type="hidden" name="method" value="PUT" />
+                    <input type="hidden" name="id" value={todo.id} />
+                    <input autoComplete="off" aria-label="Title" type="text" className="contenteditable" name="title" value={todo.title} />
+                    <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="black" viewBox="-2.5 0 19 19">
+                      <use xmlnsXlink='http://www.w3.org/1999/xlink' xlinkHref='/icons.svg#floppy-disk'></use>
+                    </svg>
+                    <button type="submit" hidden>
+                      Update
+                    </button>
+                  </form>
+                </td>
+                {props.properties.map((property) => {
+                  const value = 
+                    ((typeof todo[property.id] === 'boolean' && property.name !== 'completed') ? (todo[property.id] ? 'Yes' : 'No') : '') ||
+                    (typeof todo[property.id] === 'string' && `${todo[property.id]}`) ||
+                    (typeof todo[property.id] === 'number' && property.name !== 'id' && `${todo[property.id]}`) || '';
+                  
+                  return (
+                    <td>
+                      <input autoComplete="off" aria-label={property.name} form={`edit-todo-inline-form--${todo.id}`} type="text" name={`${property.id}`} className="contenteditable" value={value} />
+                      <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="black" viewBox="-2.5 0 19 19">
+                        <use xmlnsXlink='http://www.w3.org/1999/xlink' xlinkHref='/icons.svg#floppy-disk'></use>
+                      </svg>
+                    </td>
+                  );
+                })}
+                <td>
+                  <TodoActionsMenu
+                    todo={todo}
+                    todos={props.todos}
+                    index={index}
+                    filteredIndex={filteredIndex}
+                    filteredTodos={filteredTodos}
+                    referrer={props.referrer}
+                  />
+                </td>
+              </tr>
+            );
+          })}
+          <tr>
+            <td></td>
+            <td>
+              <form action="/api/todos" method="POST" role="none" id="add-todo-form">
+                <input type="hidden" name="method" value="POST" />
+                <input
+                  aria-label="Title"
+                  autoComplete="off"
+                  required
+                  type="text"
+                  name="title"
+                  placeholder="Title"
+                  className="contenteditable"
+                  data-auto-focus={!props.referrer.state || props.referrer.state === 'ADD_TODO'}
+                  value=""
+                />
+                <button type="submit" hidden>
+                  Add
+                </button>
+              </form>
+              <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="black" viewBox="-2.5 0 19 19">
+                <use xmlnsXlink='http://www.w3.org/1999/xlink' xlinkHref='/icons.svg#floppy-disk'></use>
+              </svg>
+            </td>
+            {props.properties.map((property) => {
               return (
-                <tr
-                  aria-label={todo.title}
-                  data-completed={todo.completed ? '' : undefined}>
-                  <td>
-                    <UpdateTodoCompletedForm
-                      todo={todo}
-                      properties={props.properties}
-                      autofocus={(['EDIT_TODO_COMPLETED'].includes(props.referrer.state) && index === (props.referrer.index ?? (length - 1)))}
-                    />
-                  </td>
-                  <td>
-                    <form method="POST" action="/api/todos">
-                      <input type="hidden" name="method" value="PUT" />
-                      <input type="hidden" name="id" value={todo.id} />
-                      {props.properties.map((property) => (
-                        <input type="hidden" name={`${property.id}`} value={`${todo[property.id] || ''}`} />
-                      ))}                     
-                      <input aria-label="Title" type="text" className="contenteditable" name="title" value={todo.title} />
-                    </form>
-                  </td>
-                  {props.properties.map((property) => {
-                    const value = 
-                      ((typeof todo[property.id] === 'boolean' && property.name !== 'completed') ? (todo[property.id] ? 'Yes' : 'No') : '') ||
-                      (typeof todo[property.id] === 'string' && `${todo[property.id]}`) ||
-                      (typeof todo[property.id] === 'number' && property.name !== 'id' && `${todo[property.id]}`) || '';
-                    
-                    return (
-                      <td>
-                        <form method="POST" action="/api/todos">
-                          <input type="hidden" name="method" value="PUT" />
-                          <input type="hidden" name="id" value={todo.id} />
-                          <input type="hidden" name="title" value={todo.title} />
-                          {props.properties.map((p) => {
-                            if (p.id === property.id) {
-                              return;
-                            }
-
-                            return (
-                              <input type="hidden" name={`${p.id}`} value={`${todo[p.id] || ''}`} />
-                            );
-                          })}
-                          <input aria-label={property.name} type="text" name={`${property.id}`} className="contenteditable" value={value} />
-                        </form>
-                      </td>
-                    );
-                  })}
-                  <td>
-                    <TodoActionsMenu
-                      todo={todo}
-                      todos={props.todos}
-                      index={index}
-                      filteredIndex={filteredIndex}
-                      filteredTodos={filteredTodos}
-                      referrer={props.referrer}
-                    />
-                  </td>
-                </tr>
+                <td>
+                  <input
+                    aria-label={property.name}
+                    autoComplete="off"
+                    className="contenteditable"
+                    form="add-todo-form"
+                    key={property.id}
+                    type="text"
+                    name={`${property.id}`}
+                    placeholder={property.name}
+                    value=""
+                  />
+                  <svg className="unsaved-indicator" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="black" viewBox="-2.5 0 19 19">
+                    <use xmlnsXlink='http://www.w3.org/1999/xlink' xlinkHref='/icons.svg#floppy-disk'></use>
+                  </svg>
+                </td>
               );
             })}
-          </tbody>
-        </table>
-      </>}
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
     </section>
   );
 }

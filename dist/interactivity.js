@@ -85,7 +85,6 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   Array.from(window.document.querySelectorAll('.contenteditable[value]')).forEach((inputElement) => {
-    console.log(inputElement, '...');
     inputElement.addEventListener('input', () => {
       if (inputElement.value !== (inputElement.getAttribute('value') || '')) {
         inputElement.classList.add('is-dirty');
@@ -94,6 +93,36 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  const uniqueContenteditableForms = [...new Set(Array.from(window.document.querySelectorAll('.contenteditable')).map((inputElement) => inputElement.form).filter((form) => !!form))];
+
+  console.log(uniqueContenteditableForms);
+
+  for (const form of uniqueContenteditableForms) {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const promises = uniqueContenteditableForms.map((contenteditableForm) => {
+        const hasDirtyFormElements = Array.from(contenteditableForm.elements).find((formElement) => {
+          return formElement.matches('.contenteditable.is-dirty');
+        });
+
+        if (!hasDirtyFormElements) {
+          return;
+        }
+
+        return fetch(contenteditableForm.getAttribute('action'), {
+          method: contenteditableForm.getAttribute('method'),
+          body: new FormData(contenteditableForm),
+        });
+      });
+
+      console.log(promises.length);
+
+      Promise.all(promises).then(() => {
+        window.location.reload();
+      });
+    });
+  }
 
   Array.from(window.document.querySelectorAll('[role="menu"]')).forEach((menuElement) => {
     const detailsElement = menuElement.closest('details');
