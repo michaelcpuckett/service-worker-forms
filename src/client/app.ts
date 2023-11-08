@@ -89,6 +89,72 @@ window.addEventListener("DOMContentLoaded", () => {
       inputElement.value.length;
   });
 
+  Array.from(
+    window.document.querySelectorAll<HTMLFormElement>("form[data-auto-submit]")
+  ).forEach((formElement) => {
+    const inputElement = Array.from(formElement.elements).find(
+      (formElement) =>
+        formElement instanceof HTMLElement &&
+        formElement.matches('input:not([type="hidden"])')
+    );
+    let isSubmitting: number | false = false;
+
+    inputElement?.addEventListener("input", () => {
+      const promises = uniqueContenteditableForms.map((contenteditableForm) => {
+        const hasDirtyFormElements = Array.from(
+          contenteditableForm?.elements || []
+        ).find((formElement) => {
+          return formElement.matches(".contenteditable.is-dirty");
+        });
+
+        if (!hasDirtyFormElements) {
+          return;
+        }
+
+        if (contenteditableForm === formElement) {
+          return;
+        }
+
+        if (!contenteditableForm?.checkValidity()) {
+          return;
+        }
+
+        return fetch(contenteditableForm?.getAttribute("action") ?? "", {
+          method: contenteditableForm.getAttribute("method") ?? "",
+          body: new FormData(contenteditableForm),
+        });
+      });
+
+      return new Promise((resolve, reject) => {
+        if (formElement.dataset.autoSubmit === "delay") {
+          const timestamp = Date.now();
+          isSubmitting = timestamp;
+          new Promise((r) => setTimeout(r, 400)).then(() => {
+            if (isSubmitting !== timestamp) {
+              reject();
+            } else {
+              isSubmitting = false;
+              resolve(void 0);
+            }
+          });
+        } else {
+          resolve(void 0);
+        }
+      })
+        .then(() => {
+          return Promise.all(promises);
+        })
+        .then(() => {
+          if (formElement.checkValidity()) {
+            formElement.submit();
+          }
+        })
+        .catch(() => {
+          // Do nothing.
+        });
+    });
+  });
+
   Array.from(window.document.querySelectorAll("dialog")).forEach(
     (dialogElement) => {
       dialogElement.addEventListener("click", (event) => {
