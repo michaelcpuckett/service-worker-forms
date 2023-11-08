@@ -15,7 +15,7 @@ export function TodosTableView(
 
     const allStringProperties = [
       'title',
-      ...props.properties.map((property) => property.id),
+      ...props.properties.filter((property) => property.type === String).map((property) => property.id),
     ]
 
     return allStringProperties.find((stringProperty) => {
@@ -23,7 +23,7 @@ export function TodosTableView(
         return false;
       }
 
-      return todo[stringProperty].toLowerCase().includes(props.referrer.query.toLowerCase());
+      return (todo[stringProperty] || '').toLowerCase().includes(props.referrer.query.toLowerCase());
     });
   });
 
