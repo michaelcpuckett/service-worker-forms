@@ -13,7 +13,18 @@ export function TodosTableView(
       return true;
     }
 
-    return todo.title.toLowerCase().includes(props.referrer.query.toLowerCase());
+    const allStringProperties = [
+      'title',
+      ...props.properties.map((property) => property.id),
+    ]
+
+    return allStringProperties.find((stringProperty) => {
+      if (!props.referrer.query) {
+        return false;
+      }
+
+      return todo[stringProperty].toLowerCase().includes(props.referrer.query.toLowerCase());
+    });
   });
 
   const filteredTodos = queriedTodos.filter((todo) => {

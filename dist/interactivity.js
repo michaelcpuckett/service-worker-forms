@@ -103,10 +103,13 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     inputElement.addEventListener('blur', () => {
-      if (inputElement.classList.contains('is-dirty')) {
-        inputElement.form.dispatchEvent(new SubmitEvent('submit', {
-          cancelable: true,
-        }));
+      if (inputElement.classList.contains('is-dirty') && inputElement.form?.checkValidity()) {
+        fetch(inputElement.form.getAttribute('action'), {
+          method: inputElement.form.getAttribute('method'),
+          body: new FormData(inputElement.form),
+        }).then(() => {
+          inputElement.classList.remove('is-dirty');
+        });
       }
     });
   });
