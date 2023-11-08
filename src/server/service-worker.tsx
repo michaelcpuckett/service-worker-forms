@@ -11,8 +11,9 @@ import { pathToRegexp, match, parse, compile }from "path-to-regexp";
 
 const URLS_TO_CACHE = [
   '/style.css',
+  '/flyout-menu.css',
   '/icons.svg',
-  '/interactivity.js',
+  '/app.js',
   '/manifest.json',
 ];
 
@@ -479,4 +480,23 @@ async function getDb(): Promise<IDBPDatabase<unknown>> {
       console.error(event);
     });
   });
+}
+
+declare module "react" {
+  interface HTMLAttributes<T>
+    extends React.AriaAttributes,
+      React.DOMAttributes<T> {
+    shadowrootmode?: string;
+  }
+}
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "flyout-menu": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
+    }
+  }
 }

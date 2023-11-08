@@ -7,9 +7,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "parcel build --no-scope-hoist"
   },
+  "server": "dist/sw.js",
+  "client": "dist/app.js",
   "targets": {
-    "default": {
-      "source": "./src/app.tsx",
+    "server": {
+      "source": "./src/server/service-worker.tsx",
+      "distDir": "./dist"
+    },
+    "client": {
+      "source": "./src/client/app.ts",
       "distDir": "./dist"
     }
   },

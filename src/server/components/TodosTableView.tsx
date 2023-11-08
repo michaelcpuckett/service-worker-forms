@@ -129,8 +129,8 @@ export function TodosTableView(
                     </td>
                   );
                 })}
-                <td>
-                  <form method="POST" action={`/api/todos/${todo.id}`} id={`edit-todo-inline-form--${todo.id}`}>
+                <td aria-label={`Actions for ${todo.title}`}>
+                  <form method="POST" action={`/api/todos/${todo.id}`} id={`edit-todo-inline-form--${todo.id}`} role="none">
                     <input type="hidden" name="method" value="PUT" />
                     <button type="submit" hidden>
                       Update

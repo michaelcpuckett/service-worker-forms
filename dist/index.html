@@ -22,7 +22,7 @@
   <div role="status">Loading...</div>
   <script type="module">
     window.addEventListener("DOMContentLoaded", (event) => {
-      navigator.serviceWorker.register("/app.js").then(
+      navigator.serviceWorker.register("/sw.js").then(
         () => {
           navigator.serviceWorker.ready.then(() => {
             window.location.reload();

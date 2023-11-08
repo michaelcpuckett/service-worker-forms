@@ -6,7 +6,7 @@ export function PageShell(props: React.PropsWithChildren<{ pageTitle: string; se
     <html lang="en" className={`theme--${props.settings.theme || 'dark'}`}>
       <head>
         <title>{props.pageTitle}</title>
-        <script src="/interactivity.js"></script>
+        <script src="/app.js"></script>
         <link rel="stylesheet" href="/style.css" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
