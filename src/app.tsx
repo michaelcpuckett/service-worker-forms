@@ -1,3 +1,7 @@
+// TODO
+// If type of property changes, then the value should be reset to the default
+// value unless there is a way to convert the value to the new type.
+
 import { renderToString } from "react-dom/server";
 import { TodosPage } from "./pages/TodosPage";
 import { SettingsPage } from "./pages/SettingsPage";
