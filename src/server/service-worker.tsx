@@ -225,6 +225,52 @@ self.addEventListener("fetch", function (event: Event) {
     }
 
     switch (pathname) {
+      case '/api/todos': {
+        console.log('HERE1');
+        switch (formData.method) {
+          case 'POST': {
+            const db = await getDb();
+            const id = Date.now();
+            const todo = {
+              id,
+              title: formData.title || '',
+              completed: formData.completed === 'on',
+            };
+
+            const properties = await getPropertiesFromIndexedDb(db);
+
+            for (const property of properties) {
+              const value = formData[property.id];
+
+              if (property.type === String) {
+                todo[property.id] = value || '';
+              }
+
+              if (property.type === Number) {
+                todo[property.id] = Number(value) || 0;
+              }
+
+              if (property.type === Boolean) {
+                todo[property.id] = Boolean(value);
+              }
+            }
+            
+            await saveTodoToIndexedDB(todo as Todo, db);
+
+            const url = new URL(event.request.referrer);
+            url.searchParams.set('state', 'ADD_TODO');
+
+            console.log('REDIRECTING TO', url.href);
+
+            return new Response(null, {
+              headers: {
+                "Location": url.href,
+              },
+              status: 303,
+            });
+          }
+        }
+      }
       case '/api/properties': {
         switch (formData.method) {
           case 'POST': {
@@ -293,50 +339,6 @@ self.addEventListener("fetch", function (event: Event) {
           status: 303,
         });
       }
-      case '/api/todos': {
-        switch (formData.method) {
-          case 'POST': {
-            const db = await getDb();
-            const id = Date.now();
-            const todo = {
-              id,
-              title: formData.title || '',
-              completed: formData.completed === 'on',
-            };
-
-            const properties = await getPropertiesFromIndexedDb(db);
-
-            for (const property of properties) {
-              const value = formData[property.id];
-
-              if (property.type === String) {
-                todo[property.id] = value || '';
-              }
-
-              if (property.type === Number) {
-                todo[property.id] = Number(value) || 0;
-              }
-
-              if (property.type === Boolean) {
-                todo[property.id] = Boolean(value);
-              }
-            }
-            
-            await saveTodoToIndexedDB(todo as Todo, db);
-
-            const url = new URL(event.request.referrer);
-            url.searchParams.set('state', 'ADD_TODO');
-
-            return new Response(null, {
-              headers: {
-                "Location": url.href,
-              },
-              status: 303,
-            });
-          }
-        }
-      }
-      break;
       case '/api/settings': {
         switch (formData.method) {
           case 'PUT': {
@@ -363,10 +365,6 @@ self.addEventListener("fetch", function (event: Event) {
         });
       }
     }
-
-    return new Response('Not found', {
-      status: 404,
-    });
   })());
 });
 

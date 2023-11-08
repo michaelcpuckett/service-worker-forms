@@ -4,14 +4,7 @@ export function AddPropertyForm(props: React.PropsWithChildren<{}>) {
   return (
     <form action="/api/properties" method="POST">
       <input type="hidden" name="method" value="POST" />
-      <label key="type">
-        <span>Type</span>
-        <select name="type">
-          <option value="String">String</option>
-          <option value="Number">Number</option>
-          <option value="Boolean">Boolean</option>
-        </select>
-      </label>
+      <input type="hidden" name="type" value="String" />
       <label key="name">
         <span>Name</span>
         <input

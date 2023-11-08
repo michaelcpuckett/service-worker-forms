@@ -13,7 +13,7 @@ export function PropertiesModalDialog(props: React.PropsWithChildren<{ closeButt
     }}>
       <AddPropertyForm />
       {properties.map((property) => <>
-        <hr />
+        <hr role="none" />
         <EditPropertyForm property={property} />
       </>)}
     </ModalDialog>

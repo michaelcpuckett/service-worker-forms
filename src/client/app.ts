@@ -177,7 +177,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   Array.from(
     window.document.querySelectorAll<HTMLInputElement>(
-      '.contenteditable[value]:not([form="add-todo-form"])'
+      ".contenteditable[value]"
     )
   ).forEach((inputElement) => {
     inputElement.addEventListener("input", () => {
@@ -187,6 +187,10 @@ window.addEventListener("DOMContentLoaded", () => {
         inputElement.classList.remove("is-dirty");
       }
     });
+
+    if (inputElement.form?.dataset.autoSave === "false") {
+      return;
+    }
 
     inputElement.addEventListener("blur", () => {
       if (
@@ -206,9 +210,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const uniqueContenteditableForms = [
     ...new Set(
       Array.from(
-        window.document.querySelectorAll<HTMLInputElement>(
-          '.contenteditable:not([form="add-todo-form"])'
-        )
+        window.document.querySelectorAll<HTMLInputElement>(".contenteditable")
       )
         .map((inputElement) => inputElement.form)
         .filter((form) => !!form)
@@ -229,6 +231,10 @@ window.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
+        if (contenteditableForm === form) {
+          return;
+        }
+
         if (!contenteditableForm?.checkValidity()) {
           return;
         }
@@ -240,7 +246,7 @@ window.addEventListener("DOMContentLoaded", () => {
       });
 
       Promise.all(promises).then(() => {
-        window.location.reload();
+        form.submit();
       });
     });
   }

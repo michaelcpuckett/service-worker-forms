@@ -161,7 +161,6 @@ export function TodosTableView(
               <input
                 aria-label="Title"
                 autoComplete="off"
-                required
                 type="text"
                 name="title"
                 form="add-todo-form"
@@ -195,7 +194,7 @@ export function TodosTableView(
               );
             })}
             <td>
-              <form action="/api/todos" method="POST" role="none" id="add-todo-form">
+              <form action="/api/todos" method="POST" role="none" id="add-todo-form" data-auto-save="false">
                 <input type="hidden" name="method" value="POST" />
                 <button type="submit" className="button">
                   Add

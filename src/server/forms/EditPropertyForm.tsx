@@ -7,14 +7,7 @@ export function EditPropertyForm(props: React.PropsWithChildren<{ property: Prop
       <input type="hidden" name="method" value="PUT" />
       <input type="hidden" name="id" value={props.property.id} />
       <input type="hidden" name="index" value={props.property.index} />
-      <label key="type">
-        <span>Type</span>
-        <select name="type" defaultValue={props.property.type.constructor.name}>
-          <option value="String">String</option>
-          <option value="Number">Number</option>
-          <option value="Boolean">Boolean</option>
-        </select>
-      </label>
+      <input type="hidden" name="type" value="String" />
       <label key="name">
         <span>Name</span>
         <input
