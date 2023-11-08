@@ -145,7 +145,8 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   
   Array.from(window.document.querySelectorAll('form[data-auto-submit]')).forEach((formElement) => {
-    const inputElement = Array.from(formElement.elements).find((formElement) => formElement.matches('input[type="checkbox"]'));
+    const inputElement = Array.from(formElement.elements).find((formElement) => formElement.matches('input:not([type="hidden"])'));
+    let isSubmitting = false;
 
     inputElement.addEventListener('input', () => {
       const promises = uniqueContenteditableForms.map((contenteditableForm) => {
@@ -171,10 +172,30 @@ window.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      Promise.all(promises).then(() => {
+      return new Promise((resolve, reject) => {
+        if (formElement.dataset.autoSubmit === 'delay') {
+          const timestamp = Date.now();
+          isSubmitting = timestamp;
+          new Promise((r) => setTimeout(r, 400)).then(() => {
+            if (isSubmitting !== timestamp) {
+              reject();
+            } else {
+              isSubmitting = false;
+              resolve();
+            }
+          });
+        } else {
+          resolve();
+        }
+      })
+      .then(Promise.all(promises))
+      .then(() => {
         if (formElement.checkValidity()) {
           formElement.submit();
         }
+      })
+      .catch(() => {
+        // Do nothing.
       });
     });
   });
