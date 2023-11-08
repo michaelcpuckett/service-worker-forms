@@ -16,7 +16,15 @@ export function TodosPage(props: React.PropsWithChildren<{ todos?: Todo[]; refer
         </nav>
         <main>
           <header>
-            <h1>New Todo List</h1>
+            <form action="/api/todos" method="POST" role="none">
+              <input type="hidden" name="method" value="PUT" />
+              <h1>
+                <input id="todos-title-input" className="contenteditable" name="title" type="text" value="New Todo List" />
+              </h1>
+              <button type="button" hidden>
+                Edit
+              </button>
+            </form>
             <TriggerPropertiesEditForm autofocus={props.referrer.state === 'CLOSE_EDIT_PROPERTIES_DIALOG'} />
           </header>
           <TodosTableView todos={props.todos || []} referrer={props.referrer} properties={props.properties} />
