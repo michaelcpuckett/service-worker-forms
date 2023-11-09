@@ -15,6 +15,7 @@ export function DatabasePage(props: React.PropsWithChildren<{ database: Database
     <PageShell pageTitle="Rows" settings={props.settings}>
       <div className="container" inert={['CONFIRMING_DELETE_ROW', 'EDITING_ROW', 'EDITING_PROPERTIES'].includes(props.referrer.state) ? '' : null}>
         <nav>
+          <a href="/">Home</a>
           <a href="/settings">Settings</a>
         </nav>
         <main>
