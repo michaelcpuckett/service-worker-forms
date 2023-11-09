@@ -10,8 +10,16 @@ export interface Settings {
   theme: string;
 }
 
+export type Database = {
+  id: number;
+  name: string;
+  properties: Property[];
+  rows: Row[];
+};
+
 export type Property = {
   id: number;
+  databaseId: number;
   type:
     | StringConstructor
     | NumberConstructor
@@ -25,8 +33,9 @@ type DynamicPropertyKeyValuePair<P extends Property[]> = {
   [K in P[number]["id"]]: P[number]["type"];
 };
 
-export type Todo = {
+export type Row = {
   id: number;
+  databaseId: number;
   title: string;
   completed: boolean;
 } & DynamicPropertyKeyValuePair<Property[]>;

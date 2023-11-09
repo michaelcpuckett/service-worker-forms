@@ -4,8 +4,8 @@ export function FlyoutMenu(props: React.PropsWithChildren<{ id: string; label: s
   return (
     <details role="none">
       <summary
-        id={`todos-actions-menu-trigger--${props.id}`}
-        aria-controls={`todos-actions-menu--${props.id}`}
+        id={`rows-actions-menu-trigger--${props.id}`}
+        aria-controls={`rows-actions-menu--${props.id}`}
         role="button"
         aria-label={`Actions for ${props.label}`}
         aria-haspopup="true"
@@ -16,8 +16,8 @@ export function FlyoutMenu(props: React.PropsWithChildren<{ id: string; label: s
       </summary>
       <div
         role="menu"
-        id={`todos-actions-menu--${props.id}`}
-        aria-labelledby={`todos-actions-menu-trigger--${props.id}`}>
+        id={`rows-actions-menu--${props.id}`}
+        aria-labelledby={`rows-actions-menu-trigger--${props.id}`}>
         <slot></slot>
       </div>
     </details>

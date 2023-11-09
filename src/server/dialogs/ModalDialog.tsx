@@ -4,7 +4,7 @@ export function ModalDialog(props: React.PropsWithChildren<{ heading: React.Reac
   return (
     <dialog aria-labelledby="modal-dialog-header" aria-modal={true} open={props.open}>
       <div className="modal-dialog-body" role="none">
-        <form action="/api/todos/ui" method="POST" className="close-dialog-form" role="none">
+        <form action="/api/rows/ui" method="POST" className="close-dialog-form" role="none">
           {props.closeButtonData ? 
             Object.entries(props.closeButtonData).map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)
             : <>

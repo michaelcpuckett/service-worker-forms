@@ -1,9 +1,9 @@
 import React from 'react';
-import {Property, Todo} from '../types';
+import {Property, Row} from '../types';
 
-export function EditTodoForm(props: React.PropsWithoutRef<{ todo: Todo; index: number; properties: Property[]; }>) {
+export function EditRowForm(props: React.PropsWithoutRef<{ row: Row; index: number; properties: Property[]; }>) {
   return (
-    <form action={`/api/todos/${props.todo.id}`} method="POST" role="none">
+    <form action={`/api/databases/${props.row.databaseId}/rows/${props.row.id}`} method="POST" role="none">
       <input type="hidden" name="method" value="PUT" />
       <label>
         <span>Title</span>
@@ -14,7 +14,7 @@ export function EditTodoForm(props: React.PropsWithoutRef<{ todo: Todo; index: n
           type="text"
           name="title"
           placeholder="Title"
-          value={props.todo.title}
+          value={props.row.title}
         />
       </label>
       {props.properties.map((property) => {
@@ -26,7 +26,7 @@ export function EditTodoForm(props: React.PropsWithoutRef<{ todo: Todo; index: n
               type="text"
               name={`${property.id}`}
               placeholder={property.name}
-              value={`${props.todo[property.id] || ''}`}
+              value={`${props.row[property.id] || ''}`}
             />
           </label>
         );

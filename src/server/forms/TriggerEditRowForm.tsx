@@ -1,10 +1,10 @@
 import React from "react";
-import { Todo } from "../types";
+import { Row } from "../types";
 
-export function TriggerTodoEditForm(props: React.PropsWithChildren<{ todo: Todo; index: number; autofocus?: boolean; role?: string; tabindex?: number; }>) {
+export function TriggerEditRowForm(props: React.PropsWithChildren<{ row: Row; index: number; autofocus?: boolean; role?: string; tabindex?: number; }>) {
   return (
-    <form action="/api/todos/ui" method="POST" role="none">
-      <input type="hidden" name="state" value="EDITING_TODO" />
+    <form action="/api/rows/ui" method="POST" role="none">
+      <input type="hidden" name="state" value="EDITING_ROW" />
       <input type="hidden" name="index" value={props.index} />
       <button
         className="button"

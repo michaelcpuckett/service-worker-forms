@@ -1,13 +1,14 @@
-// TODO
+// ROW
 // If type of property changes, then the value should be reset to the default
 // value unless there is a way to convert the value to the new type.
 
 import { renderToString } from "react-dom/server";
-import { TodosPage } from "./pages/TodosPage";
+import { DatabasePage } from "./pages/DatabasePage";
 import { SettingsPage } from "./pages/SettingsPage";
-import { Todo, Referrer, Settings, Property } from "./types";
+import { Row, Referrer, Settings, Property, Database } from "./types";
 import { IDBPDatabase, wrap } from 'idb';
 import { pathToRegexp, match, parse, compile }from "path-to-regexp";
+import {HomePage} from './pages/HomePage';
 
 const URLS_TO_CACHE = [
   '/style.css',
@@ -48,8 +49,6 @@ self.addEventListener("fetch", function (event: Event) {
     return;
   }
 
-  const url = new URL(event.request.url);
-
   if (event.request.method === 'GET') {
     return event.respondWith((async () => {
       const url = new URL(event.request.url);
@@ -74,11 +73,38 @@ self.addEventListener("fetch", function (event: Event) {
           return cachedResponse;
         }
       }
+  
+      const matchesDatabase = pathToRegexp("/databases/:id").exec(pathname);
+
+      if (matchesDatabase) {
+        const db = await getDb();
+        const id = Number(matchesDatabase[1]);
+        const renderResult = await renderDatabasePage(id, db, referrer);
+
+        return new Response(`<!DOCTYPE html>${renderResult}`, {
+          headers: { "Content-Type": "text/html" },
+        });
+      }
+
+      const matchesRow = pathToRegexp("/databases/:dbId/rows/:id").exec(pathname);
+
+      if (matchesRow) {
+        const url = new URL(event.request.referrer);
+        url.pathname = `/databases/${matchesRow[1]}`;
+        url.searchParams.set('state', 'EDIT_ROW');
+
+        return new Response(null, {
+          headers: {
+            "Location": url.href,
+          },
+          status: 303,
+        });
+      }
 
       switch (pathname) {
         case '/': {
           const db = await getDb();
-          const renderResult = await renderTodosPage(db, referrer);
+          const renderResult = await renderHomePage(db, referrer);
           
           return new Response(`<!DOCTYPE html>${renderResult}`, {
             headers: { "Content-Type": "text/html" },
@@ -105,27 +131,92 @@ self.addEventListener("fetch", function (event: Event) {
     const formData = Object.fromEntries(rawFormData.entries());
     const {pathname} = new URL(event.request.url);
 
-    const matchesTodo = pathToRegexp("/api/todos/:id").exec(pathname);
-    const matchesTodoCompleted = pathToRegexp("/api/todos/:id/completed").exec(pathname);
+    const matchesDatabase = pathToRegexp("/api/databases/:id").exec(pathname);
 
-    if (matchesTodo) {
+    if (matchesDatabase) {
       switch (formData.method) {
         case 'PUT': {
           const db = await getDb();
-          const id = Number(matchesTodo[1]);
-          const todos = await getTodosFromIndexedDb(db);
-          const index = todos.findIndex(todo => todo.id === id);
+          const id = Number(matchesDatabase[1]);
+          const prev = await getDatabaseFromIndexedDb(id, db);
+          const name = formData.name || '';
+          
+          const database = {
+            ...prev,
+            name,
+          };
+
+          await editDatabaseInIndexedDb(database, id, db);
+
+          const url = new URL(event.request.referrer);
+          url.searchParams.set('state', 'EDIT_DATABASE');
+
+          return new Response(null, {
+            headers: {
+              "Location": url.href,
+            },
+            status: 303,
+          });
+        }
+      }
+    }
+
+    const matchesRows = pathToRegexp("/api/databases/:dbid/rows").exec(pathname);
+
+    if (matchesRows) {
+      switch (formData.method) {
+        case 'POST': {
+          const db = await getDb();
+          const dbId = Number(matchesRows[1]);
+          const properties = await getPropertiesFromIndexedDb(dbId, db);
+          const id = Date.now();
+          const row = {
+            id,
+            databaseId: dbId,
+            title: formData.title || '',
+            completed: false,
+          };
+
+          for (const property of properties) {
+            row[property.id] = formData[property.id] || '';
+          }
+
+          await addRowToIndexedDb(row, db);
+          
+          const url = new URL(event.request.referrer);
+          url.searchParams.set('state', 'ADD_ROW');
+
+          return new Response(null, {
+            headers: {
+              "Location": url.href,
+            },
+            status: 303,
+          });
+        }
+      }
+    }
+
+    const matchesRow = pathToRegexp("/api/databases/:dbid/rows/:id").exec(pathname);
+
+    if (matchesRow) {
+      switch (formData.method) {
+        case 'PUT': {
+          const db = await getDb();
+          const dbId = Number(matchesRow[1]);
+          const id = Number(matchesRow[2]);
+          const rows = await getRowsFromIndexedDb(dbId, db);
+          const index = rows.findIndex(row => row.id === id);
 
           if ('index' in formData) {
             const newIndex = Number(formData.index);
-            const prev = {...todos[newIndex], id: todos[index].id};
-            const todo = {...todos[index], id: todos[newIndex].id};
+            const prev = {...rows[newIndex], id: rows[index].id};
+            const row = {...rows[index], id: rows[newIndex].id};
 
-            await editTodoInIndexedDb(todo, todo.id, db);
-            await editTodoInIndexedDb(prev, prev.id, db);
+            await editRowInIndexedDb(row, row.id, db);
+            await editRowInIndexedDb(prev, prev.id, db);
 
             const url = new URL(event.request.referrer);
-            url.searchParams.set('state', `REORDER_TODO_${newIndex < index ? 'UP' : 'DOWN'}`);
+            url.searchParams.set('state', `REORDER_ROW_${newIndex < index ? 'UP' : 'DOWN'}`);
             url.searchParams.set('index', `${newIndex}`);
 
             return new Response(null, {
@@ -136,36 +227,37 @@ self.addEventListener("fetch", function (event: Event) {
             });
           }
 
-          const prev = todos[index] || {};
+          const prev = rows[index] || {};
 
-          const todo = {
+          const row = {
             id,
+            databaseId: dbId,
             title: ('title' in formData ? formData.title : prev.title) || '',
             completed: prev.completed,
           };
 
-          const properties = await getPropertiesFromIndexedDb(db);
+          const properties = await getPropertiesFromIndexedDb(dbId, db);
 
           for (const property of properties) {
             const value = formData[property.id] || prev[property.id];
 
             if (property.type === String) {
-              todo[property.id] = value || '';
+              row[property.id] = value || '';
             }
 
             if (property.type === Number) {
-              todo[property.id] = Number(value) || 0;
+              row[property.id] = Number(value) || 0;
             }
 
             if (property.type === Boolean) {
-              todo[property.id] = Boolean(value);
+              row[property.id] = Boolean(value);
             }
           }
 
-          await editTodoInIndexedDb(todo as Todo, id, db);
+          await editRowInIndexedDb(row as Row, id, db);
 
           const url = new URL(event.request.referrer);
-          url.searchParams.set('state', 'EDIT_TODO');
+          url.searchParams.set('state', 'EDIT_ROW');
           url.searchParams.set('index', `${index}`);
 
           return new Response(null, {
@@ -178,14 +270,15 @@ self.addEventListener("fetch", function (event: Event) {
 
         case 'DELETE': {
           const db = await getDb();
-          const id = Number(matchesTodo[1]);
-          const todos = await getTodosFromIndexedDb(db);
-          const index = todos.findIndex(todo => todo.id === id);
+          const dbId = Number(matchesRow[1]);
+          const id = Number(matchesRow[2]);
+          const rows = await getRowsFromIndexedDb(dbId, db);
+          const index = rows.findIndex(row => row.id === id);
 
-          await deleteTodoInIndexedDb(id, db);
+          await deleteRowInIndexedDb(id, db);
 
           const url = new URL(event.request.referrer);
-          url.searchParams.set('state', 'DELETE_TODO');
+          url.searchParams.set('state', 'DELETE_ROW');
           url.searchParams.set('index', `${index}`);
 
           return new Response(null, {
@@ -198,25 +291,71 @@ self.addEventListener("fetch", function (event: Event) {
       }
     }
 
-    if (matchesTodoCompleted) {
+    const matchesRowCompleted = pathToRegexp("/api/databases/:dbid/rows/:id/completed").exec(pathname);
+
+    if (matchesRowCompleted) {
       switch (formData.method) {
         case 'PUT': {
           const db = await getDb();
-          const id = Number(matchesTodoCompleted[1]);
-          const todos = await getTodosFromIndexedDb(db);
-          const index = todos.findIndex(todo => todo.id === id);
-          const prev = todos[index] || {};
-          const todo = {...prev, completed: formData.completed === 'on'};
+          const dbId = Number(matchesRowCompleted[1]);
+          const id = Number(matchesRowCompleted[2]);
+          const rows = await getRowsFromIndexedDb(dbId, db);
+          const index = rows.findIndex(row => row.id === id);
+          const prev = rows[index] || {};
+          const row = {...prev, completed: formData.completed === 'on'};
           
-          await editTodoInIndexedDb(todo, todo.id, db);
+          await editRowInIndexedDb(row, row.id, db);
           
           const url = new URL(event.request.referrer);
-          url.searchParams.set('state', 'EDIT_TODO_COMPLETED');
+          url.searchParams.set('state', 'EDIT_ROW_COMPLETED');
           url.searchParams.set('index', `${index}`);
 
           return new Response(null, {
             headers: {
               "Location": url.href,
+            },
+            status: 303,
+          });
+        }
+      }
+    }
+
+    const matchesProperties = pathToRegexp("/api/databases/:dbId/properties").exec(pathname);
+    
+    if (matchesProperties) {
+      switch (formData.method) {
+        case 'POST': {
+          const db = await getDb();
+
+          await addPropertyToIndexedDB({
+            id: Date.now(),
+            databaseId: Number(matchesProperties[1]),
+            type: formData.type,
+            name: formData.name,
+            index: Number(formData.index),
+          }, db);
+
+          return new Response(null, {
+            headers: {
+              "Location": event.request.referrer,
+            },
+            status: 303,
+          });
+        }
+        case 'PUT': {
+          const db = await getDb();
+
+          await editPropertyInIndexedDB({
+            id: Number(formData.id),
+            databaseId: Number(matchesProperties[1]),
+            type: formData.type,
+            name: formData.name,
+            index: Number(formData.index),
+          }, db);
+
+          return new Response(null, {
+            headers: {
+              "Location": event.request.referrer,
             },
             status: 303,
           });
@@ -225,84 +364,24 @@ self.addEventListener("fetch", function (event: Event) {
     }
 
     switch (pathname) {
-      case '/api/todos': {
-        console.log('HERE1');
+      case "/api/databases": {
         switch (formData.method) {
           case 'POST': {
             const db = await getDb();
             const id = Date.now();
-            const todo = {
+            const database = {
               id,
-              title: formData.title || '',
-              completed: formData.completed === 'on',
+              name: formData.name || '',
             };
-
-            const properties = await getPropertiesFromIndexedDb(db);
-
-            for (const property of properties) {
-              const value = formData[property.id];
-
-              if (property.type === String) {
-                todo[property.id] = value || '';
-              }
-
-              if (property.type === Number) {
-                todo[property.id] = Number(value) || 0;
-              }
-
-              if (property.type === Boolean) {
-                todo[property.id] = Boolean(value);
-              }
-            }
-            
-            await saveTodoToIndexedDB(todo as Todo, db);
-
+  
+            await addDatabaseToIndexedDb(database, db);
+  
             const url = new URL(event.request.referrer);
-            url.searchParams.set('state', 'ADD_TODO');
-
-            console.log('REDIRECTING TO', url.href);
-
+            url.searchParams.set('state', 'ADD_DATABASE');
+  
             return new Response(null, {
               headers: {
                 "Location": url.href,
-              },
-              status: 303,
-            });
-          }
-        }
-      }
-      case '/api/properties': {
-        switch (formData.method) {
-          case 'POST': {
-            const db = await getDb();
-
-            await addPropertyToIndexedDB({
-              id: Date.now(),
-              type: formData.type,
-              name: formData.name,
-              index: Number(formData.index),
-            }, db);
-
-            return new Response(null, {
-              headers: {
-                "Location": event.request.referrer,
-              },
-              status: 303,
-            });
-          }
-          case 'PUT': {
-            const db = await getDb();
-
-            await editPropertyInIndexedDB({
-              id: Number(formData.id),
-              type: formData.type,
-              name: formData.name,
-              index: Number(formData.index),
-            }, db);
-
-            return new Response(null, {
-              headers: {
-                "Location": event.request.referrer,
               },
               status: 303,
             });
@@ -313,7 +392,7 @@ self.addEventListener("fetch", function (event: Event) {
         switch (formData.method) {
           case 'POST': {
             const url = new URL(event.request.referrer);
-            url.searchParams.set('state', 'SEARCH_TODOS');
+            url.searchParams.set('state', 'SEARCH_ROWS');
             url.searchParams.set('query', formData.query ?? '');
 
             return new Response(null, {
@@ -325,7 +404,7 @@ self.addEventListener("fetch", function (event: Event) {
           }
         }
       }
-      case '/api/todos/ui': {
+      case '/api/rows/ui': {
         const url = new URL(event.request.referrer);
 
         for (const [key, value] of Object.entries(formData)) {
@@ -368,12 +447,18 @@ self.addEventListener("fetch", function (event: Event) {
   })());
 });
 
-async function renderTodosPage(db: IDBPDatabase<unknown>, referrer: Referrer) {
-  const todos = await getTodosFromIndexedDb(db);
+async function renderHomePage(db: IDBPDatabase<unknown>, referrer: Referrer) {
+  const databases = await getDatabasesFromIndexedDb(db);
   const settings = await getSettingsFromIndexedDb(db);
-  const properties = await getPropertiesFromIndexedDb(db);
 
-  return renderToString(TodosPage({todos, referrer, settings, properties}));
+  return renderToString(HomePage({databases, settings, referrer}));
+}
+
+async function renderDatabasePage(id: number, db: IDBPDatabase<unknown>, referrer: Referrer) {
+  const database = await getDatabaseFromIndexedDb(id, db);
+  const settings = await getSettingsFromIndexedDb(db);
+
+  return renderToString(DatabasePage({database, referrer, settings}));
 }
 
 async function renderSettingsPage(db: IDBPDatabase<unknown>) {
@@ -388,10 +473,11 @@ async function getSettingsFromIndexedDb(db: IDBPDatabase<unknown>) {
   return { theme };
 }
 
-async function getPropertiesFromIndexedDb(db: IDBPDatabase<unknown>): Promise<Property[]> {
+async function getPropertiesFromIndexedDb(id: number, db: IDBPDatabase<unknown>): Promise<Property[]> {
   const tx = db.transaction('properties', 'readwrite');
   const store = tx.objectStore('properties');
-  const properties = await store.getAll();
+  const allProperties = await store.getAll();
+  const properties = allProperties.filter(property => property.databaseId === id);
 
   if (properties.length) {
     for (const property of properties) {
@@ -404,6 +490,16 @@ async function getPropertiesFromIndexedDb(db: IDBPDatabase<unknown>): Promise<Pr
   return [];
 }
 
+async function addDatabaseToIndexedDb(database: Partial<Database> & {
+  id: number;
+  name: string;
+}, db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('databases', 'readwrite');
+  const store = tx.objectStore('databases');
+  await store.add(database, database.id);
+  await tx.done;
+}
+
 async function saveSettingsToIndexedDb(settings: Settings, db: IDBPDatabase<unknown>) {
   const tx = db.transaction('settings', 'readwrite');
   const store = tx.objectStore('settings');
@@ -411,49 +507,70 @@ async function saveSettingsToIndexedDb(settings: Settings, db: IDBPDatabase<unkn
   await tx.done;
 }
 
-async function getTodosFromIndexedDb(db: IDBPDatabase<unknown>) {
-  const tx = db.transaction('todos', 'readwrite');
-  const store = tx.objectStore('todos');
-  const todos = await store.getAll();
-  return todos;
+async function getDatabaseFromIndexedDb(id: number, db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('databases', 'readwrite');
+  const store = tx.objectStore('databases');
+  const database = await store.get(id);
+  const rows = await getRowsFromIndexedDb(id, db);
+  const properties = await getPropertiesFromIndexedDb(id, db);
+
+  return {
+    ...database,
+    rows,
+    properties,
+  };
 }
 
-async function saveTodoToIndexedDB(todo: Todo, db: IDBPDatabase<unknown>) {
-  const tx = db.transaction('todos', 'readwrite');
-  const store = tx.objectStore('todos');
-  await store.add(todo, todo.id);
+async function getDatabasesFromIndexedDb(db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('databases', 'readwrite');
+  const store = tx.objectStore('databases');
+  const databases = await store.getAll();
+  return databases;
+}
+
+async function getRowsFromIndexedDb(id: number, db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('rows', 'readwrite');
+  const store = tx.objectStore('rows');
+  const rows = await store.getAll();
+  return rows.filter(row => row.databaseId === id);
+}
+
+async function addRowToIndexedDb(row: Row, db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('rows', 'readwrite');
+  const store = tx.objectStore('rows');
+  await store.add(row, row.id);
   await tx.done;
 }
 
-async function editTodoInIndexedDb(todo: Todo, id: number, db: IDBPDatabase<unknown>) {
-  const tx = db.transaction('todos', 'readwrite');
-  const store = tx.objectStore('todos');
-  await store.put(todo, id);
+async function editDatabaseInIndexedDb(database: Database, id: number, db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('databases', 'readwrite');
+  const store = tx.objectStore('databases');
+  await store.put(database, id);
   await tx.done;
 }
 
-async function deleteTodoInIndexedDb(id: number, db: IDBPDatabase<unknown>) {
-  const tx = db.transaction('todos', 'readwrite');
-  const store = tx.objectStore('todos');
+async function editRowInIndexedDb(row: Row, id: number, db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('rows', 'readwrite');
+  const store = tx.objectStore('rows');
+  await store.put(row, id);
+  await tx.done;
+}
+
+async function deleteRowInIndexedDb(id: number, db: IDBPDatabase<unknown>) {
+  const tx = db.transaction('rows', 'readwrite');
+  const store = tx.objectStore('rows');
   await store.delete(id);
   await tx.done;
 }
 
-type PropertyWithStringType = {
-  id: Property['id']
-  type: 'String' | 'Number' | 'Boolean',
-  name: Property['name'],
-  index: Property['index'],
-};
-
-async function addPropertyToIndexedDB(property: PropertyWithStringType, db: IDBPDatabase<unknown>) {
+async function addPropertyToIndexedDB(property: Property, db: IDBPDatabase<unknown>) {
   const tx = db.transaction('properties', 'readwrite');
   const store = tx.objectStore('properties');
   await store.add(property, property.id);
   await tx.done;
 }
 
-async function editPropertyInIndexedDB(property: PropertyWithStringType, db: IDBPDatabase<unknown>) {
+async function editPropertyInIndexedDB(property: Property, db: IDBPDatabase<unknown>) {
   const tx = db.transaction('properties', 'readwrite');
   const store = tx.objectStore('properties');
   await store.put(property, property.id);
@@ -462,14 +579,15 @@ async function editPropertyInIndexedDB(property: PropertyWithStringType, db: IDB
 
 async function getDb(): Promise<IDBPDatabase<unknown>> {
   return await new Promise((resolve) => {
-    const openRequest = self.indexedDB.open('todos', 2);
+    const openRequest = self.indexedDB.open('clone', 2);
 
     openRequest.addEventListener('success', () => {
       resolve(wrap(openRequest.result));
     });
 
     openRequest.addEventListener('upgradeneeded', () => {
-      openRequest.result.createObjectStore('todos');
+      openRequest.result.createObjectStore('databases');
+      openRequest.result.createObjectStore('rows');
       openRequest.result.createObjectStore('settings');
       openRequest.result.createObjectStore('properties');
     });

@@ -1,8 +1,9 @@
 import React from 'react';
+import { Database } from '../types';
 
-export function AddPropertyForm(props: React.PropsWithChildren<{}>) {
+export function AddPropertyForm(props: React.PropsWithChildren<{database: Database}>) {
   return (
-    <form action="/api/properties" method="POST">
+    <form action={`/api/databases/${props.database.id}/properties`} method="POST">
       <input type="hidden" name="method" value="POST" />
       <input type="hidden" name="type" value="String" />
       <label key="name">
