@@ -41,7 +41,7 @@ export function TableView(
     }
   });
 
-  const gridColumnsCss = `auto minmax(0, 1fr) ${properties.length ? `repeat(${properties.length}, minmax(0, 1fr))` : ''} auto`;
+  const gridColumnsCss = `${props.database.type === 'checklist' ? 'auto ' : ''} minmax(0, 1fr) ${properties.length ? `repeat(${properties.length}, minmax(0, 1fr))` : ''} auto`;
 
   return (
     <section aria-label="Table View">
@@ -59,9 +59,11 @@ export function TableView(
       }}>
         <thead>
           <tr>
-            <th>
-              Done
-            </th>
+            {props.database.type === 'checklist' ? (
+              <th className="align-center">
+                Done
+              </th>
+            ) : null}
             <th>
               Title
             </th>
@@ -70,7 +72,7 @@ export function TableView(
                 {property.name}
               </th>
             ))}
-            <th>
+            <th className="align-center">
               Actions
             </th>
           </tr>
@@ -86,14 +88,16 @@ export function TableView(
             return (
               <tr
                 aria-label={row.title}
-                data-completed={row.completed ? '' : undefined}>
-                <td>
-                  <UpdateRowCompletedForm
-                    row={row}
-                    properties={properties}
-                    autofocus={(['EDIT_ROW_COMPLETED'].includes(props.referrer.state) && index === (props.referrer.index ?? (length - 1)))}
-                  />
-                </td>
+                data-completed={(props.database.type === 'checklist' && row.completed) ? '' : undefined}>
+                {props.database.type === 'checklist' ? (
+                  <td className="align-center">
+                    <UpdateRowCompletedForm
+                      row={row}
+                      properties={properties}
+                      autofocus={(['EDIT_ROW_COMPLETED'].includes(props.referrer.state) && index === (props.referrer.index ?? (length - 1)))}
+                    />
+                  </td>
+                ) : null}
                 <td>
                   <input
                     form={`edit-row-inline-form--${row.id}`}
@@ -132,7 +136,7 @@ export function TableView(
                     </td>
                   );
                 })}
-                <td aria-label={`Actions for ${row.title}`}>
+                <td className="align-center" aria-label={`Actions for ${row.title}`}>
                   <form method="POST" action={`/api/databases/${props.database.id}/rows/${row.id}`} id={`edit-row-inline-form--${row.id}`} role="none">
                     <input type="hidden" name="method" value="PUT" />
                     <button type="submit" hidden>
@@ -152,14 +156,16 @@ export function TableView(
             );
           })}
           <tr>
-            <td>
-              <input
-                name="completed"
-                type="checkbox"
-                aria-label="Completed"
-                form="add-row-form"
-              />
-            </td>
+            {props.database.type === 'checklist' ? (
+              <td className="align-center">
+                <input
+                  name="completed"
+                  type="checkbox"
+                  aria-label="Completed"
+                  form="add-row-form"
+                />
+              </td>
+            ) : null}
             <td>
               <input
                 aria-label="Title"
@@ -196,7 +202,7 @@ export function TableView(
                 </td>
               );
             })}
-            <td>
+            <td className="align-center">
               <form action={`/api/databases/${props.database.id}/rows`} method="POST" role="none" id="add-row-form" data-auto-save="false">
                 <input type="hidden" name="method" value="POST" />
                 <button type="submit" className="button">

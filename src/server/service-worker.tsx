@@ -168,13 +168,16 @@ self.addEventListener("fetch", function (event: Event) {
         case 'POST': {
           const db = await getDb();
           const dbId = Number(matchesRows[1]);
+          const database = await getDatabaseFromIndexedDb(dbId, db);
           const properties = await getPropertiesFromIndexedDb(dbId, db);
           const id = Date.now();
           const row = {
             id,
             databaseId: dbId,
             title: formData.title || '',
-            completed: false,
+            ...database.type === 'checklist' ? {
+              completed: false,
+            } : null,
           };
 
           for (const property of properties) {

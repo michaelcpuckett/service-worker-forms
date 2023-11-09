@@ -10,13 +10,21 @@ export interface Settings {
   theme: string;
 }
 
-export type Database = {
+export interface Database {
   id: number;
-  type: "checklist";
+  type: "checklist" | "table" | "list" | "calendar" | "board" | "timeline";
   name: string;
   properties: Property[];
   rows: Row[];
-};
+}
+
+export interface Checklist extends Database {
+  type: "checklist";
+}
+
+export interface Table extends Database {
+  type: "table";
+}
 
 export type Property = {
   id: number;
@@ -38,5 +46,13 @@ export type Row = {
   id: number;
   databaseId: number;
   title: string;
-  completed: boolean;
+  completed?: boolean;
 } & DynamicPropertyKeyValuePair<Property[]>;
+
+export interface ChecklistRow extends Row {
+  completed: boolean;
+}
+
+export interface TableRow extends Row {
+  completed?: never;
+}

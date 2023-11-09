@@ -8,6 +8,10 @@ export function AddDatabaseForm() {
       <input type="text" name="name" placeholder="Name" required />
       <select name="type" required>
         <option value="checklist">Checklist</option>
+        <option value="table">Table</option>
+        <option value="list">List</option>
+        <option value="calendar">Calendar</option>
+        <option value="board">Board</option>
       </select>
       <button type="submit" className="button">Add Database</button>
     </form>

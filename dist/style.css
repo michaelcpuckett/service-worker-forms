@@ -173,7 +173,7 @@ td:has(.contenteditable.is-dirty) svg {
     place-items: center;
     padding: .5rem 0;
 
-    &:is(:first-child, :last-child) {
+    &.align-center {
       place-content: center;
     }
 
