@@ -371,6 +371,7 @@ self.addEventListener("fetch", function (event: Event) {
             const id = Date.now();
             const database = {
               id,
+              type: formData.type,
               name: formData.name || '',
             };
   

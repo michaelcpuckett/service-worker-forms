@@ -12,6 +12,7 @@ export interface Settings {
 
 export type Database = {
   id: number;
+  type: "checklist";
   name: string;
   properties: Property[];
   rows: Row[];

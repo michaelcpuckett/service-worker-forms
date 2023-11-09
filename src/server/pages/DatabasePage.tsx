@@ -22,9 +22,12 @@ export function DatabasePage(props: React.PropsWithChildren<{ database: Database
           <header>
             <form action={`/api/databases/${props.database.id}`} method="POST" role="none">
               <input type="hidden" name="method" value="PUT" />
-              <h1>
-                <input id="rows-title-input" required className="contenteditable" name="name" type="text" value={props.database.name} />
-              </h1>
+              <div>
+                <h1>
+                  <input id="rows-title-input" required className="contenteditable" name="name" type="text" value={props.database.name} />
+                </h1>
+                <em>{props.database.type === 'checklist' ? 'Checklist' : 'Table'}</em>
+              </div>
               <button type="button" hidden>
                 Edit
               </button>
